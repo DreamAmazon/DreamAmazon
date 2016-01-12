@@ -1,0 +1,35 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DreamAmazon.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="LicenseKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ShortOutput" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{Email}|{Password}|{Balance}|{Order Quantity}|{Zip}|{Phone}</Value>
+    </Setting>
+    <Setting Name="CleanOutput" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Email : {Email}
+Password : {Password}
+Giftcard Balance : {Balance}
+Quantity of Orders : {Order Quantity}
+Zip Code : {Zip}
+Phone number : {Phone}</Value>
+    </Setting>
+    <Setting Name="DBCUser" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DBCPass" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Mode" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="Threads" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">-1</Value>
+    </Setting>
+    <Setting Name="ProxiesLogin" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

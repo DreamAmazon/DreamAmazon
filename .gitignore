@@ -1,0 +1,44 @@
+*.mdf
+*.ldf
+
+#OS junk files
+[Tt]humbs.db
+*.DS_Store
+
+#Visual Studio files
+[Oo]bj
+[Bb]in
+*.[Cc]ache
+*.exe
+*.pdb
+*.user
+*.suo
+*.tlb
+*.tlh
+*.msi
+*.dll
+*.bak
+*.ncb
+*.log
+*.gpState
+*.sln.DotSettings
+
+#Tooling
+_ReSharper*/
+*.resharper
+[Tt]est[Rr]esult*
+Ankh.NoLoad
+
+#Project files
+[Bb]uild/
+
+#Subversion files
+.svn
+
+# Office Temp Files
+~$*
+
+#NuGet
+packages/
+
+*.doc
