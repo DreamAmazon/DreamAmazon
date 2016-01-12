@@ -196,6 +196,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="amazon.ico" />
+    <None Include="md.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\53269.gif" />
   </ItemGroup>
   <ItemGroup>
