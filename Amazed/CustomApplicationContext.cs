@@ -27,8 +27,26 @@ namespace DreamAmazon
         {
             if (string.IsNullOrEmpty(Properties.Settings.Default.LicenseKey))
             {
+                CloseForm(splash);
                 // ask user about license key
-                CreateForm<LicenseForm>();
+                var frmLicense = CreateForm<LicenseForm>();
+                frmLicense.Closed += (s, e) =>
+                {
+                    if (!frmLicense.RealClose)
+                    {
+                        // closed with correct license key
+                        var frmMain = CreateForm<Main>();
+                        frmMain.Closed += (_, __) =>
+                        {
+                            Properties.Settings.Default.Save();
+                            Application.Exit();
+                        };
+                    }
+                    else
+                    {
+                        Application.Exit();
+                    }
+                };
             }
             else
             {
@@ -54,6 +72,12 @@ namespace DreamAmazon
                             // init result is true so we close splash screen and show main form
                             _isLicenseValid = true;
                             CloseForm(splash);
+                            var frmMain = CreateForm<Main>();
+                            frmMain.Closed += (_, __) => 
+                            {
+                                Properties.Settings.Default.Save();
+                                Application.Exit();
+                            };
                             return;
                         }
                     }
@@ -63,10 +87,10 @@ namespace DreamAmazon
                     }
 
                     // init result is false or error occurred, we should display message and close application
-                    MessageBox.Show(splash, "Error while initializing components !", "Error",
+                    MessageBox.Show("Error while initializing components !", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                    CloseForm(splash);
+                    Application.Exit();
                 };
                 worker.RunWorkerAsync();
             }
@@ -75,31 +99,27 @@ namespace DreamAmazon
         private void CloseForm(Form form)
         {
             if (form.InvokeRequired)
+            {
                 form.Invoke(new Action(() => CloseForm(form)));
+            }
             else
-                form.Close();
+            {
+                form.Opacity = 0;
+                form.ShowInTaskbar = false;
+            }
         }
 
         private T CreateForm<T>() where T : Form
         {
             Form form = (Form)Activator.CreateInstance(typeof(T));
-            MainForm = form;
+            //MainForm = form;
             form.Show();
             return (T)form;
         }
 
         protected override void OnMainFormClosed(object sender, EventArgs e)
         {
-            if (sender is LicenseForm)
-            {
-                if (!(sender as LicenseForm).RealClose)
-                {
-                    // closed with correct license key
-                    CreateForm<Main>();
-                    return;
-                }
-            }
-            else if (sender is SplashForm)
+            if (sender is SplashForm)
             {
                 if (!_isLicenseValidated)
                 {
@@ -110,10 +130,6 @@ namespace DreamAmazon
                     CreateForm<Main>();
                     return;
                 }
-            }
-            else if (sender is Main)
-            {
-                Properties.Settings.Default.Save();
             }
             base.OnMainFormClosed(sender, e);
         }
