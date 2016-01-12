@@ -196,6 +196,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="amazon.ico" />
+    <None Include="ua.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="md.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
