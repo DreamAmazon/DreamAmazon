@@ -21,7 +21,7 @@ namespace DreamAmazon.Configs
             builder.RegisterType<DeathByCaptchaService>()
                 .As<ICaptchaService>()
                 .SingleInstance()
-                .WithParameter("debug", true);
+                .WithParameter("debug", false);
 
             var container = builder.Build();
             var csl = new Autofac.Extras.CommonServiceLocator.AutofacServiceLocator(container);

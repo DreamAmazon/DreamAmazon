@@ -31,7 +31,11 @@ namespace DreamAmazon.Controls
             }
             var values = PossibleValues;
             _currentIndex = Math.Min(_currentIndex + 1, values.Length - 1);
-            Value = values[_currentIndex];
+            var newValue = values[_currentIndex];
+            if (newValue >= values.Min() && newValue <= values.Max())
+            {
+                Value = newValue;
+            }
         }
 
         public override void DownButton()
@@ -42,7 +46,11 @@ namespace DreamAmazon.Controls
             }
             var values = PossibleValues;
             _currentIndex = Math.Max(_currentIndex - 1, 0);
-            Value = values[_currentIndex];
+            var newValue = values[_currentIndex];
+            if (newValue >= values.Min() && newValue <= values.Max())
+            {
+                Value = newValue;
+            }
         }
 
         private IEnumerable<decimal> GetPossibleValues()
