@@ -28,10 +28,12 @@ namespace DreamAmazon
 
             if (StateContext.IsBadLog(_response))
             {
+                Context.Logger.Debug("bad log detected:" + account?.Email);
                 Context.FireOnCheckCompleted(Context, CheckResults.Bad, Context.CheckParams);
             }
             else if (StateContext.IsSecurityQuestion(_response))
             {
+                Context.Logger.Debug("security question detected:" + account?.Email);
                 nHelper.GET("http://amazon.com/homepage=true");
                 Context.GatherInformation(nHelper, account);
 
@@ -39,6 +41,7 @@ namespace DreamAmazon
             }
             else if (StateContext.IsCookiesDisabled(_response))
             {
+                Context.Logger.Debug("cookies disabled, restart state object" + account?.Email);
                 Context.SetRestartState();
                 return;
             }
@@ -76,18 +79,22 @@ namespace DreamAmazon
                         // limit captcha attemts
                         if (_captchaCounter >= 5)
                         {
+                            Context.Logger.Debug("captcha decoded, counter reached, finish state object:" + account?.Email);
                             Context.SetFinishState();
                             return;
                         }
 
                         _captchaCounter++;
 
+                        Context.Logger.Debug("captcha decoded, repeat current state object:" + account?.Email);
                         return;
                     }
                     //todo: captcha not recognized, so need to request new one
+                    Context.Logger.Debug("captcha not recognized, finish state object:" + account?.Email);
                 }
                 else
                 {
+                    Context.Logger.Debug("not dbc mode, restart state object:" + account?.Email);
                     proxyManager.RemoveProxy(nHelper.Proxy);
                     Context.SetRestartState();
                     return;
@@ -95,20 +102,24 @@ namespace DreamAmazon
             }
             else if (StateContext.IsAskCredentials(_response))
             {
+                Context.Logger.Debug("ask credentials, restart state object:" + account?.Email);
                 Context.SetRestartState();
             }
             else if (StateContext.IsAnotherDevice(_response))
             {
+                Context.Logger.Debug("is another device answer detected:" + account?.Email);
                 Context.FireOnCheckCompleted(Context, CheckResults.Good, Context.CheckParams);
             }
             else if (StateContext.IsError(_response))
             {
+                Context.Logger.Debug("error detected, restart state object:" + account?.Email);
                 proxyManager.RemoveProxy(nHelper.Proxy);
                 Context.SetRestartState();
                 return;
             }
             else
             {
+                Context.Logger.Debug("gather information:" + account?.Email);
                 Context.GatherInformation(nHelper, account);
 
                 Context.FireOnCheckCompleted(Context, CheckResults.Good, Context.CheckParams);

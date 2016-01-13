@@ -32,17 +32,19 @@ namespace DreamAmazon
                 }
             }
 
-            var output = nHelper.GET(Globals.LOG_URL);
+            var loginResponse = nHelper.GET(Globals.LOG_URL);
 
-            if (StateContext.IsError(output))
+            if (StateContext.IsError(loginResponse))
             {
+                Context.Logger.Debug("error detected, finish state object:" + Context.CheckParams.Account?.Email);
                 Context.ProxyManager.RemoveProxy(nHelper.Proxy);
+                Context.SetFinishState();
                 return;
             }
 
             var attributes = StateContext.ParseAccountAttributes(Context.CheckParams.Account, metadata);
 
-            foreach (Match match in _attributesRegex.Matches(output))
+            foreach (Match match in _attributesRegex.Matches(loginResponse))
             {
                 attributes.Add(match.Groups[1].ToString(), match.Groups[2].ToString());
             }

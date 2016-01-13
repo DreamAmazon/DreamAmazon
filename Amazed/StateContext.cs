@@ -9,7 +9,7 @@ namespace DreamAmazon
 {
     public class StateContext
     {
-        private readonly ILogger _logger;
+        public ILogger Logger { get; }
         public IProxyManager ProxyManager { get; protected set; }
         public ICaptchaService CaptchaService { get; protected set; }
 
@@ -21,7 +21,7 @@ namespace DreamAmazon
 
         public StateContext(ILogger logger, IProxyManager proxyManager, ICaptchaService captchaService)
         {
-            _logger = logger;
+            Logger = logger;
             ProxyManager = proxyManager;
             CaptchaService = captchaService;
 
@@ -149,13 +149,13 @@ namespace DreamAmazon
                         else if (addy == "oldPhoneNumber")
                             account.Phone = m.Groups[2].Value;
                         else
-                            _logger.Info(string.Format("unknown ADDY info:'{0}'", addy));
+                            Logger.Info(string.Format("unknown ADDY info:'{0}'", addy));
                     }
                 }
                 catch (Exception exception)
                 {
-                    _logger.Debug("error while gather addy info");
-                    _logger.Error(exception);
+                    Logger.Debug("error while gather addy info");
+                    Logger.Error(exception);
 
                     account.ZipCode = "N/A";
                     account.Phone = "N/A";
@@ -174,8 +174,8 @@ namespace DreamAmazon
                 }
                 catch (Exception exception)
                 {
-                    _logger.Debug("error while gather Orders");
-                    _logger.Error(exception);
+                    Logger.Debug("error while gather Orders");
+                    Logger.Error(exception);
 
                     account.Orders = "N/A";
                 }
@@ -193,8 +193,8 @@ namespace DreamAmazon
                 }
                 catch (Exception exception)
                 {
-                    _logger.Debug("error while gather GiftCardBalance");
-                    _logger.Error(exception);
+                    Logger.Debug("error while gather GiftCardBalance");
+                    Logger.Error(exception);
 
                     account.GiftCardBalance = "N/A";
                 }

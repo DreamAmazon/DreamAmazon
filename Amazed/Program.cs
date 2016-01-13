@@ -37,6 +37,10 @@ namespace DreamAmazon
 
         private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
+            var logger = ServiceLocator.Current.GetInstance<ILogger>();
+            if (logger != null)
+                logger.Error(e.Exception);
+
             CustomApplicationContext.Current.ThrowOnUI(e.Exception);
         }
 
