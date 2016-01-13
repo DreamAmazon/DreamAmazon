@@ -9,35 +9,20 @@ namespace DreamAmazon
 {
     public class NetHelper
     {
-        private CookieContainer _cookies;
-        public CookieContainer Cookies
-        {
-            get { return _cookies; }
-            protected set { _cookies = value; }
-        }
+        public CookieContainer Cookies { get; protected set; }
 
-        private String _ua;
-        public String UserAgent
-        {
-            get { return _ua; }
-            set { _ua = value; }
-        }        
+        public string UserAgent { get; set; }
 
-        private IWebProxy proxy;
-        public IWebProxy Proxy
-        {
-            get { return proxy; }
-            set { proxy = value; }
-        }
-        
+        public IWebProxy Proxy { get; set; }
+
         public NetHelper()
         {
-            this.Cookies = new CookieContainer();
+            Cookies = new CookieContainer();
         }
 
-        public string POST(string url, Dictionary<string, string> postParameters)
+        public Result<string> POST(string url, Dictionary<string, string> postParameters)
         {
-            string postData = "";
+            string postData = string.Empty;
 
             foreach (string key in postParameters.Keys)
             {
@@ -59,9 +44,9 @@ namespace DreamAmazon
             request.UserAgent = UserAgent;
             request.Accept = "*/*";
 
-            if (proxy != null)
+            if (Proxy != null)
             {
-                request.Proxy = proxy;
+                request.Proxy = Proxy;
             }
 
             try
@@ -84,33 +69,34 @@ namespace DreamAmazon
                         }
                         using (StreamReader sr = new StreamReader(responseStream, Encoding.Default))
                         {
-                            return sr.ReadToEnd();
+                            var content = sr.ReadToEnd();
+                            return Result.Ok(content);
                         }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                return "NetError";
+                return Result.Fail<string>(exception.Message);
             }    
             
         }
 
-        public string GET(string url)
+        public Result<string> GET(string url)
         {
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
             request.Method = "GET";
 
-            request.CookieContainer = this.Cookies;
+            request.CookieContainer = Cookies;
             request.KeepAlive = true;
             request.ContentType = "application/x-www-form-urlencoded; text/plain; charset=UTF-8";
             request.AllowAutoRedirect = true;
             request.UserAgent = UserAgent;
             request.Accept = "*/*";
 
-            if (proxy != null)
+            if (Proxy != null)
             {
-                request.Proxy = proxy;
+                request.Proxy = Proxy;
             }
 
             try
@@ -126,14 +112,15 @@ namespace DreamAmazon
                     {
                         using (StreamReader sr = new StreamReader(responseStream, Encoding.Default))
                         {
-                            return sr.ReadToEnd();
+                            var content = sr.ReadToEnd();
+                            return Result.Ok(content);
                         }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                return "NetError";
+                return Result.Fail<string>(exception.Message);
             }
         }
     }

@@ -34,7 +34,7 @@ namespace DreamAmazon
             _currentState = _restartState;
         }
 
-        public void SetValidationState(string response)
+        public void SetValidationState(Result<string> response)
         {
             var validationState = _validationState as ValidationState;
             if (validationState == null)
@@ -72,9 +72,9 @@ namespace DreamAmazon
             return response.Contains(Globals.BADLOG_MSG);
         }
 
-        public static bool IsError(string response)
+        public static bool IsError(Result<string> response)
         {
-            return response == "NetError";
+            return response.Failure;
         }
 
         public static bool IsCookiesDisabled(string response)
@@ -123,25 +123,45 @@ namespace DreamAmazon
                     GatherAddyInfosAsync(nHelper, account)
                 });
 
-            Task.WhenAll(tasks).Wait();
+            try
+            {
+                Task.WhenAll(tasks).Wait();
+            }
+            catch (Exception exception)
+            {
+                Logger.Debug("error while GatherInformation:" + account?.Email);
+                Logger.Error(exception);
+            }
         }
 
         public async Task GatherAddyInfosAsync(NetHelper nHelper, Account account)
         {
             var task = Task.Factory.StartNew(() =>
             {
+                var addyIdResult = nHelper.GET(Globals.ADDY_URL);
+                if (addyIdResult.Failure)
+                {
+                    account.ZipCode = "N/A";
+                    account.Phone = "N/A";
+                    return;
+                }
+
+
                 try
                 {
-                    string pageCode = nHelper.GET(Globals.ADDY_URL);
-                    string addyId = Regex.Match(pageCode, Globals.REGEX.Replace(" />", ">")).Groups[2].Value;
-                    string addyInfos = nHelper.GET(string.Format(Globals.FULLADDY_URL, addyId));
+                    string addyId = Regex.Match(addyIdResult.Value, Globals.REGEX.Replace(" />", ">")).Groups[2].Value;
+
+                    var addyInfoResult = nHelper.GET(string.Format(Globals.FULLADDY_URL, addyId));
+
+                    if (addyInfoResult.Failure)
+                        throw new ApplicationException(addyInfoResult.Error);
                     
                     //account.ZipCode = HtmlParser.GetElementValueById(addyInfos, "enterAddressPostalCode");
                     //account.Phone = HtmlParser.GetElementValueById(addyInfos, "enterAddressPhoneNumber");
 
                     Regex attributesRegex = new Regex(Globals.REGEX, RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-                    foreach (Match m in attributesRegex.Matches(addyInfos))
+                    foreach (Match m in attributesRegex.Matches(addyInfoResult.Value))
                     {
                         var addy = m.Groups[1].Value;
                         if (addy == "oldPostalCode")
@@ -168,9 +188,16 @@ namespace DreamAmazon
         {
             var task = Task.Factory.StartNew(() =>
             {
+                var getResult = nHelper.GET(Globals.ORDERS_URL);
+                if (getResult.Failure)
+                {
+                    account.Orders = "N/A";
+                    return;
+                }
+
                 try
                 {
-                    account.Orders = Regex.Match(nHelper.GET(Globals.ORDERS_URL), Globals.ORDERS_REGEX).Groups[1].Value;
+                    account.Orders = Regex.Match(getResult.Value, Globals.ORDERS_REGEX).Groups[1].Value;
                 }
                 catch (Exception exception)
                 {
@@ -187,9 +214,16 @@ namespace DreamAmazon
         {
             var task = Task.Factory.StartNew(() =>
             {
+                var getResult = nHelper.GET(Globals.GC_URL);
+                if (getResult.Failure)
+                {
+                    account.GiftCardBalance = "N/A";
+                    return;
+                }
+
                 try
                 {
-                    account.GiftCardBalance = Regex.Match(nHelper.GET(Globals.GC_URL), Globals.GC_REGEX).Groups[1].Value;
+                    account.GiftCardBalance = Regex.Match(getResult.Value, Globals.GC_REGEX).Groups[1].Value;
                 }
                 catch (Exception exception)
                 {

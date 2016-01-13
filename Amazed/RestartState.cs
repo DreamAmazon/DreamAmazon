@@ -44,14 +44,14 @@ namespace DreamAmazon
 
             var attributes = StateContext.ParseAccountAttributes(Context.CheckParams.Account, metadata);
 
-            foreach (Match match in _attributesRegex.Matches(loginResponse))
+            foreach (Match match in _attributesRegex.Matches(loginResponse.Value))
             {
                 attributes.Add(match.Groups[1].ToString(), match.Groups[2].ToString());
             }
 
-            string response = nHelper.POST(Globals.POST_URL, attributes);
+            var responseResult = nHelper.POST(Globals.POST_URL, attributes);
 
-            Context.SetValidationState(response);
+            Context.SetValidationState(responseResult);
         }
     }
 }

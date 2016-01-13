@@ -8,13 +8,13 @@ namespace DreamAmazon
     {
         private readonly TimeSpan _getMetadataTimeout = TimeSpan.FromMinutes(1);
         private readonly Regex _attributesRegex = new Regex(Globals.REGEX, RegexOptions.Multiline | RegexOptions.IgnoreCase);
-        private string _response;
+        private Result<string> _response;
 
         public ValidationState(StateContext context) : base(context)
         {
         }
 
-        public void Init(string response)
+        public void Init(Result<string> response)
         {
             _response = response;
         }
@@ -26,12 +26,12 @@ namespace DreamAmazon
             var account = Context.CheckParams.Account;
             var proxyManager = Context.ProxyManager;
 
-            if (StateContext.IsBadLog(_response))
+            if (StateContext.IsBadLog(_response.Value))
             {
                 Context.Logger.Debug("bad log detected:" + account?.Email);
                 Context.FireOnCheckCompleted(Context, CheckResults.Bad, Context.CheckParams);
             }
-            else if (StateContext.IsSecurityQuestion(_response))
+            else if (StateContext.IsSecurityQuestion(_response.Value))
             {
                 Context.Logger.Debug("security question detected:" + account?.Email);
                 nHelper.GET("http://amazon.com/homepage=true");
@@ -39,19 +39,27 @@ namespace DreamAmazon
 
                 Context.FireOnCheckCompleted(Context, CheckResults.Good, Context.CheckParams);
             }
-            else if (StateContext.IsCookiesDisabled(_response))
+            else if (StateContext.IsCookiesDisabled(_response.Value))
             {
                 Context.Logger.Debug("cookies disabled, restart state object" + account?.Email);
                 Context.SetRestartState();
                 return;
             }
-            else if (StateContext.IsCaptchaMsg(_response))
+            else if (StateContext.IsCaptchaMsg(_response.Value))
             {
                 if (Properties.Settings.Default.Mode == 0 || Properties.Settings.Default.Mode == 1)
                 {
-                    string captchaUrl = "https://opfcaptcha-prod.s3.amazonaws.com" +
-                                        _response.Split(new[] { "opfcaptcha-prod.s3.amazonaws.com" },
-                                            StringSplitOptions.None)[1].Split('"')[0];
+                    var urlPaths = _response.Value.Split(new[] {"opfcaptcha-prod.s3.amazonaws.com"},
+                        StringSplitOptions.None);
+
+                    if (urlPaths.Length < 2)
+                    {
+                        Context.Logger.Debug("invalid url response:" + account?.Email + " , " + _response.Value);
+                        Context.SetFinishState();
+                        return;
+                    }
+
+                    string captchaUrl = "https://opfcaptcha-prod.s3.amazonaws.com" + urlPaths[1].Split('"')[0];
                     byte[] captchaBytes;
 
                     using (WebClient wc = new WebClient())
@@ -66,8 +74,11 @@ namespace DreamAmazon
 
                         var attributes = StateContext.ParseAccountAttributes(account, metadata);
 
-                        foreach (Match m in _attributesRegex.Matches(_response))
+                        foreach (Match m in _attributesRegex.Matches(_response.Value))
                         {
+                            if (m.Groups.Count < 3)
+                                continue;
+
                             attributes.Add(m.Groups[1].ToString(), m.Groups[2].ToString());
                         }
 
@@ -100,12 +111,12 @@ namespace DreamAmazon
                     return;
                 }
             }
-            else if (StateContext.IsAskCredentials(_response))
+            else if (StateContext.IsAskCredentials(_response.Value))
             {
                 Context.Logger.Debug("ask credentials, restart state object:" + account?.Email);
                 Context.SetRestartState();
             }
-            else if (StateContext.IsAnotherDevice(_response))
+            else if (StateContext.IsAnotherDevice(_response.Value))
             {
                 Context.Logger.Debug("is another device answer detected:" + account?.Email);
                 Context.FireOnCheckCompleted(Context, CheckResults.Good, Context.CheckParams);
