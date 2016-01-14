@@ -23,6 +23,12 @@ namespace DreamAmazon
 
         public override void Handle(NetHelper nHelper)
         {
+            if (_response.Failure)
+            {
+                Context.SetFinishState();
+                return;
+            }
+
             var account = Context.CheckParams.Account;
             var proxyManager = Context.ProxyManager;
 

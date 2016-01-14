@@ -86,27 +86,27 @@ namespace DreamAmazon
             _cancellationTokenSource = null;
         }
 
-        private void ShowResult(CheckResults results, Account acc)
+        private void ShowResult(CheckResults results, Account account)
         {
             if (results == CheckResults.Good)
             {
-                ListViewItem li = new ListViewItem(acc.Email);
-                li.SubItems.Add(acc.Password);
-                li.SubItems.Add(acc.GiftCardBalance);
-                li.SubItems.Add(acc.Orders);
-                li.SubItems.Add(acc.ZipCode);
-                li.SubItems.Add(acc.Phone);
+                ListViewItem li = new ListViewItem(account.Email);
+                li.SubItems.Add(account.Password);
+                li.SubItems.Add(account.GiftCardBalance);
+                li.SubItems.Add(account.Orders);
+                li.SubItems.Add(account.ZipCode);
+                li.SubItems.Add(account.Phone);
                 listView1.Items.Add(li);
                 exportBtn.Visible = true;
 
                 String output = Properties.Settings.Default.ShortOutput;
 
-                output = output.Replace("{Email}", acc.Email)
-                    .Replace("{Password}", acc.Password)
-                    .Replace("{Balance}", acc.GiftCardBalance)
-                    .Replace("{Order Quantity}", acc.Orders)
-                    .Replace("{Zip}", acc.ZipCode)
-                    .Replace("{Phone}", acc.Phone);
+                output = output.Replace("{Email}", account.Email)
+                    .Replace("{Password}", account.Password)
+                    .Replace("{Balance}", account.GiftCardBalance)
+                    .Replace("{Order Quantity}", account.Orders)
+                    .Replace("{Zip}", account.ZipCode)
+                    .Replace("{Phone}", account.Phone);
 
                _logger.Info(output);
             }

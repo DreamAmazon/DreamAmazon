@@ -244,17 +244,13 @@ namespace DreamAmazon
             await task;
         }
 
-        public delegate void CheckDoneDelegate(StateContext context, CheckResults results, CheckParams checkParams);
-        public event CheckDoneDelegate OnCheckCompleted;
+        public delegate void CheckCompletedDelegate(StateContext context, CheckResults results, CheckParams checkParams);
+        public event CheckCompletedDelegate OnCheckCompleted;
 
         public void FireOnCheckCompleted(StateContext context, CheckResults results, CheckParams checkParams)
         {
             var evt = OnCheckCompleted;
-            // ReSharper disable once UseNullPropagation
-            if (evt != null)
-            {
-                evt(context, results, checkParams);
-            }
+            evt?.Invoke(context, results, checkParams);
         }
     }
 }
