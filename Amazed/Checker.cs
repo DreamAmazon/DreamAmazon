@@ -15,6 +15,8 @@ namespace DreamAmazon
 
         public CheckParams(Account account)
         {
+            Contracts.Require(account != null);
+
             Account = account;
         }
     }
@@ -121,8 +123,7 @@ namespace DreamAmazon
 
         public void Start(CancellationToken token)
         {
-            if (token == null)
-                throw new ArgumentNullException(nameof(token));
+            Contracts.Require(token != null);
 
             FireOnCheckCompleted(CheckResults.Init, null);
 
@@ -169,8 +170,7 @@ namespace DreamAmazon
 
         private void Check(CheckParams checkParams, CancellationToken token)
         {
-            if (checkParams == null)
-                throw new ArgumentNullException(nameof(checkParams));
+            Contracts.Require(checkParams != null);
 
             try
             {

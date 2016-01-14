@@ -81,6 +81,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Configs\DependencyConfig.cs" />
+    <Compile Include="EmptyState.cs" />
     <Compile Include="Events\BalanceRetrievedMessage.cs" />
     <Compile Include="CaptchaDecodeResult.cs" />
     <Compile Include="CaptchaLoginResult.cs" />

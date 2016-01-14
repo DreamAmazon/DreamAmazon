@@ -14,9 +14,10 @@ namespace DreamAmazon
 
         private static void LoadAgents()
         {
-            if (File.Exists(@".\ua.txt"))
+            var agentsFileName = Path.GetFullPath("ua.txt");
+            if (File.Exists(agentsFileName))
             {
-                _uAgents = File.ReadAllLines(@".\ua.txt");
+                _uAgents = File.ReadAllLines(agentsFileName);
             }
             else
             {

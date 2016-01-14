@@ -18,6 +18,7 @@ namespace DreamAmazon
         private CheckState _currentState;
         private readonly CheckState _restartState;
         private readonly CheckState _validationState;
+        private readonly CheckState _emptyState;
 
         public StateContext(ILogger logger, IProxyManager proxyManager, ICaptchaService captchaService)
         {
@@ -27,6 +28,8 @@ namespace DreamAmazon
 
             _restartState = new RestartState(this);
             _validationState = new ValidationState(this);
+            _emptyState = EmptyState.Create();
+            _currentState = _emptyState;
         }
 
         public void SetRestartState()
@@ -46,14 +49,19 @@ namespace DreamAmazon
 
         public void SetFinishState()
         {
-            _currentState = null;
+            _currentState = _emptyState;
+        }
+
+        private bool IsFinishState(CheckState state)
+        {
+            return ReferenceEquals(state, _emptyState);
         }
 
         public void Handle(CheckParams checkParams, NetHelper nHelper, CancellationToken token)
         {
             CheckParams = checkParams;
             SetRestartState();
-            while (_currentState != null)
+            while (!IsFinishState(_currentState))
             {
                 if (token.IsCancellationRequested)
                     token.ThrowIfCancellationRequested();
