@@ -129,7 +129,7 @@ namespace DreamAmazon
             }
             catch (Exception exception)
             {
-                Logger.Debug("error while GatherInformation:" + account?.Email);
+                Logger.Debug("error while GatherInformation:" + account.Email);
                 Logger.Error(exception);
             }
         }

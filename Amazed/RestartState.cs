@@ -36,7 +36,7 @@ namespace DreamAmazon
 
             if (StateContext.IsError(loginResponse))
             {
-                Context.Logger.Debug("error detected, finish state object:" + Context.CheckParams.Account?.Email);
+                Context.Logger.Debug("error detected, finish state object:" + Context.CheckParams.Account.Email);
                 Context.ProxyManager.RemoveProxy(nHelper.Proxy);
                 Context.SetFinishState();
                 return;
