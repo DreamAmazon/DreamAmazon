@@ -11,7 +11,7 @@ using Microsoft.Practices.ServiceLocation;
 
 namespace DreamAmazon
 {
-    public partial class Main : Form, IListener<BalanceRetrievedMessage>, IListener<InformUserMessage>
+    public partial class Main : Form, IListener<BalanceRetrievedMessage>
     {
         private readonly Checker _accountsChecker;
         private readonly ICaptchaService _captchaService;
@@ -29,10 +29,9 @@ namespace DreamAmazon
             eventAggregator.AddListener(this);
 
             _logger = ServiceLocator.Current.GetInstance<ILogger>();
-
             _captchaService = ServiceLocator.Current.GetInstance<ICaptchaService>();
-            _proxyManager = new LoggedProxyManager(new ProxyManager());
-            _accountManager = new AccountManager();
+            _proxyManager = ServiceLocator.Current.GetInstance<IProxyManager>();
+            _accountManager = ServiceLocator.Current.GetInstance<IAccountManager>();
 
             _accountsChecker = new Checker(_captchaService, _proxyManager, _accountManager);
 
@@ -64,10 +63,11 @@ namespace DreamAmazon
                 checkBtn.Enabled = false;
                 btnStop.Visible = true;
 
-                UpdateInfos();
+                UpdateUIInfos();
+
                 _cancellationTokenSource = new CancellationTokenSource();
                 BackgroundWorker bWorker = new BackgroundWorker();
-                bWorker.DoWork += (sw, ew) => { _accountsChecker.Start(_cancellationTokenSource.Token); };
+                bWorker.DoWork += ProcessStarted;
                 bWorker.RunWorkerCompleted += ProcessCompleted;
                 bWorker.RunWorkerAsync();
             }
@@ -90,53 +90,73 @@ namespace DreamAmazon
         {
             if (results == CheckResults.Good)
             {
-                ListViewItem li = new ListViewItem(account.Email);
-                li.SubItems.Add(account.Password);
-                li.SubItems.Add(account.GiftCardBalance);
-                li.SubItems.Add(account.Orders);
-                li.SubItems.Add(account.ZipCode);
-                li.SubItems.Add(account.Phone);
-                listView1.Items.Add(li);
+                AddAccountToListView(account);
                 exportBtn.Visible = true;
 
-                String output = Properties.Settings.Default.ShortOutput;
-
-                output = output.Replace("{Email}", account.Email)
-                    .Replace("{Password}", account.Password)
-                    .Replace("{Balance}", account.GiftCardBalance)
-                    .Replace("{Order Quantity}", account.Orders)
-                    .Replace("{Zip}", account.ZipCode)
-                    .Replace("{Phone}", account.Phone);
-
-               _logger.Info(output);
+                LogAccountInfos(account);
             }
 
-            UpdateInfos();
+            UpdateUIInfos();
         }
 
-        private void UpdateInfos(bool onlyTop = false)
+        private void LogAccountInfos(Account account)
+        {
+            string output = Properties.Settings.Default.ShortOutput;
+
+            output = output.Replace("{Email}", account.Email)
+                .Replace("{Password}", account.Password)
+                .Replace("{Balance}", account.GiftCardBalance)
+                .Replace("{Order Quantity}", account.Orders)
+                .Replace("{Zip}", account.ZipCode)
+                .Replace("{Phone}", account.Phone);
+
+            _logger.Info(output);
+        }
+
+        private void AddAccountToListView(Account account)
+        {
+            ListViewItem li = new ListViewItem(account.Email);
+            li.SubItems.Add(account.Password);
+            li.SubItems.Add(account.GiftCardBalance);
+            li.SubItems.Add(account.Orders);
+            li.SubItems.Add(account.ZipCode);
+            li.SubItems.Add(account.Phone);
+            listView1.Items.Add(li);
+        }
+
+        private void UpdateUIInfos()
+        {
+            UpdateAccountCounters();
+
+            checkStatusLbl.Text = String.Format("Checking {0} account{1}...", _accountsChecker.ActiveThreads,
+                _accountsChecker.ActiveThreads > 1 ? "s" : "");
+            if (_accountsChecker.AccountsChecked >= toolStripProgressBar1.Minimum &&
+                _accountsChecker.AccountsChecked <= toolStripProgressBar1.Maximum)
+            {
+                toolStripProgressBar1.Value = _accountsChecker.AccountsChecked;
+            }
+            percentLbl.Text = String.Format("- {0}%", _accountsChecker.AccountsChecked*100/_accountManager.Count);
+        }
+
+        private void UpdateAccountCounters()
         {
             label1.Text = string.Format("Loaded Accounts : {0}", _accountManager.Count);
             label2.Text = string.Format("Checked Accounts : {0}", _accountsChecker.AccountsChecked);
             label3.Text = string.Format("Good Accounts : {0}", _accountsChecker.ValidAccounts);
             label4.Text = string.Format("Bad Accounts : {0}", _accountsChecker.BadAccounts);
+        }
 
-            if (!onlyTop)
-            {
-                checkStatusLbl.Text = String.Format("Checking {0} account{1}...", _accountsChecker.ActiveThreads, _accountsChecker.ActiveThreads > 1 ? "s" : "");
-                if (_accountsChecker.AccountsChecked >= toolStripProgressBar1.Minimum &&
-                    _accountsChecker.AccountsChecked <= toolStripProgressBar1.Maximum)
-                {
-                    toolStripProgressBar1.Value = _accountsChecker.AccountsChecked;
-                }
-                percentLbl.Text = String.Format("- {0}%", _accountsChecker.AccountsChecked * 100 / _accountManager.Count);
-            }
+        private void ProcessStarted(object sender, DoWorkEventArgs e)
+        {
+            _accountsChecker.Start(_cancellationTokenSource.Token);
         }
 
         private void ProcessCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
+            {
                 checkStatusLbl.Text = "Canceled";
+            }
             else
             {
                 if (e.Error is OperationCanceledException)
@@ -204,7 +224,7 @@ namespace DreamAmazon
                     else
                         checkBtn.Enabled = false;
 
-                    UpdateInfos(true);
+                    UpdateAccountCounters();
                 }
             }
         }
@@ -239,7 +259,7 @@ namespace DreamAmazon
                     else
                         checkBtn.Enabled = false;
 
-                    UpdateInfos(true);
+                    UpdateAccountCounters();
                 }
             }
         }
@@ -374,14 +394,6 @@ namespace DreamAmazon
         public void Handle(BalanceRetrievedMessage message)
         {
             toolStripStatusLabel2.Text = String.Format("DeathByCaptcha Balance : ${0}", message.Balance);
-        }
-
-        public void Handle(InformUserMessage message)
-        {
-            //if (message.UserMessage.Type == InformUserMessage.MessageType.Error)
-            //    MessageBox.Show(message.UserMessage.Text, "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //else if (message.UserMessage.Type == InformUserMessage.MessageType.Info)
-            //    MessageBox.Show(message.UserMessage.Text, "info", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

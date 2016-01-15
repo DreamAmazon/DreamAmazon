@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using DeathByCaptcha;
 using DreamAmazon.Events;
@@ -9,11 +8,11 @@ using Microsoft.Practices.ServiceLocation;
 
 namespace DreamAmazon.Services
 {
-    public class DeathByCaptchaService : ICaptchaService
+    public class DeathByCaptchaService : BaseCaptchaService, ICaptchaService
     {
         private readonly IEventAggregator _eventAggregator;
         private Client _dbcClient;
-        private bool _isDebugMode;
+        private readonly bool _isDebugMode;
 
         public DeathByCaptchaService(bool debug)
         {
@@ -23,14 +22,14 @@ namespace DreamAmazon.Services
 
         public double GetBalance()
         {
-            var balance = Math.Round(_dbcClient.Balance/100.0, 2);
+            var rawBal = _dbcClient.GetBalance();
+            var balance = Math.Round(rawBal / 100.0, 2);
             return balance;
         }
 
         public async Task<CaptchaDecodeResult> DecodeCaptchaAsync(byte[] image)
         {
-            if (_dbcClient == null)
-                throw new ApplicationException("make login first");
+            Contracts.Require(_dbcClient != null);
 
             var task = Task<CaptchaDecodeResult>.Factory.StartNew(() =>
             {
@@ -46,21 +45,6 @@ namespace DreamAmazon.Services
                 return null;
             });
             return await task;
-        }
-
-        private void DebugCaptcha(byte[] image, Captcha captchaResult)
-        {
-            var guid = Guid.NewGuid();
-
-            var fileName = string.Format("{0}-{1}", guid, captchaResult.Text);
-
-            File.WriteAllBytes(fileName + ".jpg", image);
-
-            var captchaText = string.Format("Id={0}\nCorrect={1}\nText={2}\nSolved={3}\nUploaded={4}", captchaResult.Id, captchaResult.Correct,
-                captchaResult.Text, captchaResult.Solved, captchaResult.Uploaded);
-
-            File.WriteAllText(fileName + ".txt", captchaText);
-
         }
 
         public async Task<CaptchaLoginResult> LoginAsync(string dbcUser, string dbcPass)

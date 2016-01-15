@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using DreamAmazon.Events;
 using DreamAmazon.Interfaces;
 using EventAggregatorNet;
 using Microsoft.Practices.ServiceLocation;
@@ -43,8 +42,8 @@ namespace DreamAmazon
 
         #region Events
 
-        public delegate void CheckDoneDelegate(CheckResults results, Account account);
-        public event CheckDoneDelegate OnCheckCompleted;
+        public delegate void CheckCompletedDelegate(CheckResults results, Account account);
+        public event CheckCompletedDelegate OnCheckCompleted;
 
         #endregion
 
@@ -125,8 +124,6 @@ namespace DreamAmazon
         {
             Contracts.Require(token != null);
 
-            FireOnCheckCompleted(CheckResults.Init, null);
-
             _threadCounter = 0;
 
             ResetCounters();
@@ -139,13 +136,17 @@ namespace DreamAmazon
 
             var exceptions = new ConcurrentQueue<Exception>();
 
+            var mFinder = MetadataFinder.Create();
+
             Parallel.ForEach(_accountManager.Accounts, options, account =>
             {
                 Interlocked.Increment(ref _threadCounter);
-                
+
+                FireOnCheckCompleted(CheckResults.Init, null);
+
                 try
                 {
-                    Check(new CheckParams(account), token);
+                    Check(new CheckParams(account), token, mFinder);
                 }
                 catch (Exception exception)
                 {
@@ -155,8 +156,13 @@ namespace DreamAmazon
                 }
 
                 Interlocked.Decrement(ref _threadCounter);
+
+                FireOnCheckCompleted(CheckResults.Init, null);
             });
 
+            mFinder.Dispose();
+            mFinder = null;
+            
             if (exceptions.Count > 0)
                 throw new AggregateException(exceptions);
         }
@@ -168,7 +174,7 @@ namespace DreamAmazon
             _badAccounts = 0;
         }
 
-        private void Check(CheckParams checkParams, CancellationToken token)
+        private void Check(CheckParams checkParams, CancellationToken token, MetadataFinder metadataFinder)
         {
             Contracts.Require(checkParams != null);
 
@@ -176,7 +182,7 @@ namespace DreamAmazon
             {
                 NetHelper nHelper = new NetHelper { UserAgent = UserAgentsManager.GetRandomUserAgent() };
 
-                var context = new StateContext(_logger, _proxyManager, _captchaService);
+                var context = new StateContext(_logger, _proxyManager, _captchaService, metadataFinder);
                 context.OnCheckCompleted += _context_OnCheckCompleted;
                 context.Handle(checkParams, nHelper, token);
                 context.OnCheckCompleted -= _context_OnCheckCompleted;
@@ -190,22 +196,13 @@ namespace DreamAmazon
                 _badAccounts++;
 
                 FireOnCheckCompleted(CheckResults.Bad, checkParams);
-
-                _eventAggregator.SendMessage(new InformUserMessage(new InformUserMessage.Message(exception.Message, InformUserMessage.MessageType.Error)));
             }
         }
 
         private void FireOnCheckCompleted(CheckResults results, CheckParams checkParams)
         {
             var evt = OnCheckCompleted;
-            // ReSharper disable once UseNullPropagation
-            if (evt != null)
-            {
-                if (checkParams == null)
-                    evt(results, null);
-                else
-                    evt(results, checkParams.Account);
-            }
+            evt?.Invoke(results, checkParams?.Account);
         }
     }
 }

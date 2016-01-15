@@ -88,7 +88,6 @@
     <Compile Include="Checker.cs" />
     <Compile Include="CheckState.cs" />
     <Compile Include="Contracts.cs" />
-    <Compile Include="Events\InformUserMessage.cs" />
     <Compile Include="HtmlParser.cs" />
     <Compile Include="Interfaces\IAccountManager.cs" />
     <Compile Include="Interfaces\IProxyManager.cs" />
@@ -97,6 +96,7 @@
     <Compile Include="RestartState.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="ResultExtensions.cs" />
+    <Compile Include="Services\BaseCaptchaService.cs" />
     <Compile Include="Services\DeathByCaptchaService.cs" />
     <Compile Include="DeathByCaptcha\AccessDeniedException.cs" />
     <Compile Include="DeathByCaptcha\Captcha.cs" />

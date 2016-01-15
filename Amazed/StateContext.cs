@@ -14,17 +14,19 @@ namespace DreamAmazon
         public ICaptchaService CaptchaService { get; protected set; }
 
         public CheckParams CheckParams { get; protected set; }
+        public MetadataFinder MetadataFinder { get; }
 
         private CheckState _currentState;
         private readonly CheckState _restartState;
         private readonly CheckState _validationState;
         private readonly CheckState _emptyState;
 
-        public StateContext(ILogger logger, IProxyManager proxyManager, ICaptchaService captchaService)
+        public StateContext(ILogger logger, IProxyManager proxyManager, ICaptchaService captchaService, MetadataFinder metadataFinder)
         {
             Logger = logger;
             ProxyManager = proxyManager;
             CaptchaService = captchaService;
+            MetadataFinder = metadataFinder;
 
             _restartState = new RestartState(this);
             _validationState = new ValidationState(this);

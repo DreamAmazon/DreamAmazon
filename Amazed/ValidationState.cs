@@ -6,7 +6,6 @@ namespace DreamAmazon
 {
     public class ValidationState : CheckState
     {
-        private readonly TimeSpan _getMetadataTimeout = TimeSpan.FromMinutes(1);
         private readonly Regex _attributesRegex = new Regex(Globals.REGEX, RegexOptions.Multiline | RegexOptions.IgnoreCase);
         private Result<string> _response;
 
@@ -19,7 +18,10 @@ namespace DreamAmazon
             _response = response;
         }
 
+        private const int CountersLimit = 3;
+
         private int _captchaCounter;
+        private int _notDbcModeCounter;
 
         public override void Handle(NetHelper nHelper)
         {
@@ -75,14 +77,15 @@ namespace DreamAmazon
 
                     if (captchaResult != null)
                     {
-                        var metadataFinder = new MetadataFinder(account);
-                        var metadata = metadataFinder.Find(_getMetadataTimeout);
+                        var metadata = Context.MetadataFinder.QueryMetadata(Context.CheckParams.Account);
+
+                        Contracts.Require(metadata != null);
 
                         var attributes = StateContext.ParseAccountAttributes(account, metadata);
 
                         foreach (Match m in _attributesRegex.Matches(_response.Value))
                         {
-                            if (m.Groups.Count < 3)
+                            if (m.Groups.Count < CountersLimit)
                                 continue;
 
                             attributes.Add(m.Groups[1].ToString(), m.Groups[2].ToString());
@@ -94,7 +97,7 @@ namespace DreamAmazon
                         Init(response);
 
                         // limit captcha attemts
-                        if (_captchaCounter >= 5)
+                        if (_captchaCounter >= CountersLimit)
                         {
                             Context.Logger.Debug("captcha decoded, counter reached, finish state object:" + account.Email);
                             Context.SetFinishState();
@@ -111,16 +114,25 @@ namespace DreamAmazon
                 }
                 else
                 {
-                    Context.Logger.Debug("not dbc mode, restart state object:" + account.Email);
+                    if (_notDbcModeCounter >= CountersLimit)
+                    {
+                        Context.Logger.Debug("not dbc mode, counter reached, finish state object:" + account.Email);
+                        Context.SetFinishState();
+                        return;
+                    }
+
                     proxyManager.RemoveProxy(nHelper.Proxy);
                     Context.SetRestartState();
+
+                    _notDbcModeCounter++;
+                    Context.Logger.Debug("not dbc mode, restart state object:" + account.Email);
+
                     return;
                 }
             }
             else if (StateContext.IsAskCredentials(_response.Value))
             {
                 Context.Logger.Debug("ask credentials, restart state object:" + account.Email);
-                Context.SetRestartState();
             }
             else if (StateContext.IsAnotherDevice(_response.Value))
             {

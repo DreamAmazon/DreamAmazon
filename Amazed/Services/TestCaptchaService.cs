@@ -1,5 +1,7 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DeathByCaptcha;
 using DreamAmazon.Events;
 using DreamAmazon.Interfaces;
 using EventAggregatorNet;
@@ -7,7 +9,7 @@ using Microsoft.Practices.ServiceLocation;
 
 namespace DreamAmazon.Services
 {
-    public class TestCaptchaService : ICaptchaService
+    public class TestCaptchaService : BaseCaptchaService, ICaptchaService
     {
         private readonly IEventAggregator _eventAggregator;
 
@@ -25,8 +27,10 @@ namespace DreamAmazon.Services
         {
             return await Task<CaptchaDecodeResult>.Factory.StartNew(() =>
             {
-                Thread.Sleep(1000);
-                return new CaptchaDecodeResult("123ab");
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+                var captchaResult = new CaptchaDecodeResult("123ab");
+                DebugCaptcha(image, new Captcha {Text = captchaResult.Text});
+                return captchaResult;
             });
         }
 

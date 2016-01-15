@@ -15,25 +15,27 @@ namespace DreamAmazon
 
         public static CustomApplicationContext Create(Form splash)
         {
-            if (Current == null)
-            {
-                Current = new CustomApplicationContext(splash);
-            }
-            return Current;
+            return Current ?? (Current = new CustomApplicationContext(splash));
         }
 
         private CustomApplicationContext(Form splash)
             : base(splash)
         {
+#if DEBUG
+            Globals.ProcessBypass();
+            CreateMainForm<Main>();
+            return;
+#endif
+
             if (string.IsNullOrEmpty(Properties.Settings.Default.LicenseKey))
             {
                 // ask user about license key
-                CreateForm<LicenseForm>();
+                CreateMainForm<LicenseForm>();
             }
             else
             {
                 // display splash screen
-                //var splash = CreateForm<SplashForm>();
+                //var splash = CreateMainForm<SplashForm>();
 
                 // start init() in background
                 var worker = new BackgroundWorker();
@@ -75,17 +77,21 @@ namespace DreamAmazon
         private void CloseForm(Form form)
         {
             if (form.InvokeRequired)
+            {
                 form.Invoke(new Action(() => CloseForm(form)));
+            }
             else
+            {
                 form.Close();
+            }
         }
 
-        private T CreateForm<T>() where T : Form
+        private T CreateMainForm<T>() where T : Form
         {
             Form form = (Form)Activator.CreateInstance(typeof(T));
             MainForm = form;
-            form.Show();
-            return (T)form;
+            MainForm.Show();
+            return (T)MainForm;
         }
 
         protected override void OnMainFormClosed(object sender, EventArgs e)
@@ -95,19 +101,15 @@ namespace DreamAmazon
                 if (!(sender as LicenseForm).RealClose)
                 {
                     // closed with correct license key
-                    CreateForm<Main>();
+                    CreateMainForm<Main>();
                     return;
                 }
             }
             else if (sender is SplashForm)
             {
-                if (!_isLicenseValidated)
+                if (_isLicenseValidated && _isLicenseValid)
                 {
-                    return;
-                }
-                if (_isLicenseValid)
-                {
-                    CreateForm<Main>();
+                    CreateMainForm<Main>();
                     return;
                 }
             }

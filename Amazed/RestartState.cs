@@ -5,7 +5,6 @@ namespace DreamAmazon
 {
     public class RestartState : CheckState
     {
-        private readonly TimeSpan _getMetadataTimeout = TimeSpan.FromMinutes(1);
         private readonly Regex _attributesRegex = new Regex(Globals.REGEX, RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
         public RestartState(StateContext context) : base(context)
@@ -14,8 +13,9 @@ namespace DreamAmazon
 
         public override void Handle(NetHelper nHelper)
         {
-            var metadataFinder = new MetadataFinder(Context.CheckParams.Account);
-            string metadata = metadataFinder.Find(_getMetadataTimeout);
+            string metadata = Context.MetadataFinder.QueryMetadata(Context.CheckParams.Account);
+
+            Contracts.Require(metadata != null);
 
             if (Properties.Settings.Default.Mode == 0 || Properties.Settings.Default.Mode == 2)
             {
@@ -46,7 +46,13 @@ namespace DreamAmazon
 
             foreach (Match match in _attributesRegex.Matches(loginResponse.Value))
             {
-                attributes.Add(match.Groups[1].ToString(), match.Groups[2].ToString());
+                if (match.Groups.Count < 3)
+                    continue;
+
+                var key = match.Groups[1].Value;
+                var val = match.Groups[2].Value;
+
+                attributes.Add(key, val);
             }
 
             var responseResult = nHelper.POST(Globals.POST_URL, attributes);

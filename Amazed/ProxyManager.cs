@@ -9,7 +9,7 @@ namespace DreamAmazon
     {
         private readonly List<IWebProxy> _proxies = new List<IWebProxy>();
 
-        public int Count { get { return _proxies.Count; } }
+        public int Count => _proxies.Count;
 
         public IWebProxy GetProxy()
         {
