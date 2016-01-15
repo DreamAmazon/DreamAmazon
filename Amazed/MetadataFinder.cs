@@ -13,13 +13,16 @@ namespace DreamAmazon
         private static volatile MetadataFinder _instance;
         private static readonly object SyncRoot = new object();
 
+        private bool _breakWaitNavigation;
         private bool _breakWaitResponse;
-        bool _breakProcessQueue;
+        private bool _breakProcessQueue;
         private readonly ILogger _logger;
 
         private readonly Uri _mdUrl = new Uri(string.Format("file:///{0}", Path.GetFullPath("md.html")));
 
         private System.Windows.Forms.WebBrowser _webBrowser;
+
+        private Account _navigationCompleteAccount;
 
         private readonly ConcurrentQueue<Account> _queries = new ConcurrentQueue<Account>();
         private readonly ConcurrentDictionary<Account, string> _responses = new ConcurrentDictionary<Account, string>();
@@ -63,7 +66,7 @@ namespace DreamAmazon
             _webBrowser = new System.Windows.Forms.WebBrowser();
             _webBrowser.DocumentCompleted += WebBrowserDocumentCompleted;
             _webBrowser.ScriptErrorsSuppressed = true;
-            _webBrowser.Url = _mdUrl;
+            //_webBrowser.Url = _mdUrl;
             System.Windows.Forms.Application.Run();
         }
 
@@ -72,84 +75,121 @@ namespace DreamAmazon
             // never returns
             while (!_breakProcessQueue)
             {
-                _logger.Debug("waiting new queries");
-
-                if (_queries.Count == 0)
-                    Thread.Sleep(1000);
+                WaitQueries();
 
                 Account account;
                 while (!_queries.TryDequeue(out account))
                 {
                     Thread.Sleep(500);
-                    _logger.Debug("can't dequeue " + account.Email);
                 }
 
-                _logger.Debug("query found " + account.Email);
                 _webBrowser.Tag = account;
                 _webBrowser.Navigate(_mdUrl);
+
+                WaitBrowserNavigation(account);
             }
         }
 
-        public string QueryMetadata(Account account)
+        private void SetBrowserNavigationComplete(Account account)
         {
-            _queries.Enqueue(account);
+            _navigationCompleteAccount = account;
+        }
 
-            while (!_breakWaitResponse && !_responses.ContainsKey(account))
+        private void WaitBrowserNavigation(Account account)
+        {
+            while (!_breakWaitNavigation && _navigationCompleteAccount != account)
             {
                 Thread.Sleep(1000);
-                _logger.Debug("waiting response " + account.Email);
+            }
+
+            _navigationCompleteAccount = null;
+
+            if (_breakWaitNavigation)
+            {
+                throw new OperationCanceledException();
+            }
+        }
+
+        private void WaitResponseReady(Account account)
+        {
+            while (!_breakWaitResponse && !IsResponseExist(account))
+            {
+                Thread.Sleep(1000);
             }
 
             if (_breakWaitResponse)
             {
-                return null;
+                throw new OperationCanceledException();
             }
+        }
+
+        private void WaitQueries()
+        {
+            if (_queries.Count == 0)
+            {
+                Thread.Sleep(1000);
+            }
+        }
+
+        private bool IsResponseExist(Account account)
+        {
+            return _responses.ContainsKey(account);
+        }
+
+        public string QueryMetadata(Account account)
+        {
+            EnqueueAccount(account);
+
+            WaitResponseReady(account);
 
             string metadata;
             while(!_responses.TryRemove(account, out metadata))
             {
                 Thread.Sleep(500);
-                _logger.Debug("can't remove response " + account.Email);
             }
-            _logger.Debug("response removed " + account.Email);
             return metadata;
+        }
+
+        private void EnqueueAccount(Account account)
+        {
+            _queries.Enqueue(account);
         }
 
         private void WebBrowserDocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e)
         {
-            _logger.Debug("document loaded");
-
             System.Windows.Forms.WebBrowser browser = (System.Windows.Forms.WebBrowser)sender;
 
             var account = browser.Tag as Account;
 
-            if (account == null)
-                _logger.Debug("browser tag is null");
-
-            _logger.Debug("document loaded " + account.Email);
+            Contracts.Require(account != null);
 
             if (browser.Document != null)
             {
                 var metadataToken = browser.Document.Body.InnerText.Replace("\r\n", "");
-                _logger.Debug("document loaded " + account.Email + " metadata=" + metadataToken);
 
                 while (!_responses.TryAdd(account, metadataToken))
                 {
                     Thread.Sleep(500);
-                    _logger.Debug("can't add response " + account.Email);
                 }
-                _logger.Debug("response added " + account.Email);
+                SetBrowserNavigationComplete(account);
             }
             else
             {
-                _logger.Debug("empty document loaded " + account.Email);
+                SetBrowserNavigationComplete(account);
+                EnqueueAccount(account);
             }
+        }
+
+        private void BreakOperations()
+        {
+            _breakProcessQueue = true;
+            _breakWaitResponse = true;
+            _breakWaitNavigation = true;
         }
 
         public void Dispose()
         {
-            _breakProcessQueue = true;
-            _breakWaitResponse = true;
+            BreakOperations();
             _webBrowser.DocumentCompleted -= WebBrowserDocumentCompleted;
             _webBrowser.Dispose();
             _webBrowser = null;

@@ -10,7 +10,10 @@ namespace DreamAmazon.Services
         {
             var guid = Guid.NewGuid();
 
-            var fileName = string.Format("{0}-{1}", guid, captchaResult.Text);
+            if (!Directory.Exists("debug"))
+                Directory.CreateDirectory("debug");
+
+            var fileName = string.Format("debug\\{0}-{1}", guid, captchaResult.Text);
 
             File.WriteAllBytes(fileName + ".jpg", image);
 
