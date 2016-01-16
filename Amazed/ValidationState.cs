@@ -49,7 +49,7 @@ namespace DreamAmazon
             }
             else if (StateContext.IsCookiesDisabled(_response.Value))
             {
-                Context.Logger.Debug("cookies disabled, restart state object" + account.Email);
+                Context.Logger.Debug("cookies disabled, restart state object:" + account.Email);
                 Context.SetRestartState();
                 return;
             }
@@ -118,25 +118,25 @@ namespace DreamAmazon
                         return;
                     }
                     //todo: captcha not recognized, so need to request new one
-                    Context.Logger.Debug("captcha not recognized, finish state object:" + account.Email);
-                }
-                else
-                {
-                    if (_notDbcModeCounter >= CountersLimit)
-                    {
-                        Context.Logger.Debug("not dbc mode, counter reached, finish state object:" + account.Email);
-                        Context.SetFinishState(CheckResults.Bad);
-                        return;
-                    }
-
-                    proxyManager.RemoveProxy(nHelper.Proxy);
+                    Context.Logger.Debug("captcha not recognized, set restart state object:" + account.Email);
                     Context.SetRestartState();
-
-                    _notDbcModeCounter++;
-                    Context.Logger.Debug("not dbc mode, restart state object:" + account.Email);
-
                     return;
                 }
+
+                if (_notDbcModeCounter >= CountersLimit)
+                {
+                    Context.Logger.Debug("not dbc mode, counter reached, finish state object:" + account.Email);
+                    Context.SetFinishState(CheckResults.Bad);
+                    return;
+                }
+
+                proxyManager.RemoveProxy(nHelper.Proxy);
+                Context.SetRestartState();
+
+                _notDbcModeCounter++;
+                Context.Logger.Debug("not dbc mode, restart state object:" + account.Email);
+
+                return;
             }
             else if (StateContext.IsAskCredentials(_response.Value))
             {
@@ -174,7 +174,7 @@ namespace DreamAmazon
                 //{}
 
                 var match = Regex.Match(response, sRegex);
-                return Result.Ok(match.Value);
+                return Result.Ok(match.Value.Trim('\"'));
             }
             return Result.Fail<string>("can't find captcha image");
         }

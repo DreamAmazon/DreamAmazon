@@ -189,7 +189,7 @@ namespace DreamAmazon
             }
             catch (Exception exception)
             {
-                _logger.Debug("error while check");
+                _logger.Debug("error while checking");
                 _logger.Error(exception);
 
                 _context_OnCheckCompleted(context, CheckResults.Bad, checkParams);
