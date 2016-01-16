@@ -113,6 +113,11 @@ namespace DreamAmazon
             return response.Contains("We haven't seen you using this device before");
         }
 
+        public static bool IsRoboCheck(string response)
+        {
+            return response.Contains("we just need to make sure you're not a robot");
+        }
+
         public static Dictionary<string, string> ParseAccountAttributes(Account account, string metadata)
         {
             var random = new Random();

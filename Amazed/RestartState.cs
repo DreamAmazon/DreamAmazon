@@ -41,6 +41,14 @@ namespace DreamAmazon
                 return;
             }
 
+            if (StateContext.IsRoboCheck(loginResponse.Value))
+            {
+                //todo:
+                Context.Logger.Debug("oops, robocheck detected");
+                Context.SetFinishState(CheckResults.Bad);
+                return;
+            }
+
             var attributes = StateContext.ParseAccountAttributes(Context.CheckParams.Account, metadata);
 
             foreach (Match match in _attributesRegex.Matches(loginResponse.Value))
@@ -54,9 +62,9 @@ namespace DreamAmazon
                 attributes.Add(key, val);
             }
 
-            var responseResult = nHelper.POST(Globals.POST_URL, attributes);
+            var postResult = nHelper.POST(Globals.POST_URL, attributes);
 
-            Context.SetValidationState(responseResult);
+            Context.SetValidationState(postResult);
         }
     }
 }
