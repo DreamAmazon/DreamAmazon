@@ -15,6 +15,7 @@ namespace DreamAmazon
 
         public CheckParams CheckParams { get; protected set; }
         public MetadataFinder MetadataFinder { get; }
+        public bool IsDebug { get; }
 
         private CheckState _currentState;
         private readonly CheckState _restartState;
@@ -32,6 +33,10 @@ namespace DreamAmazon
             _validationState = new ValidationState(this);
             _emptyState = EmptyState.Create();
             _currentState = _emptyState;
+
+#if DEBUG
+            IsDebug = true;
+#endif
         }
 
         public void SetRestartState()
@@ -253,6 +258,11 @@ namespace DreamAmazon
         {
             var evt = OnCheckCompleted;
             evt?.Invoke(context, results, checkParams);
+        }
+
+        public void Debug(string value)
+        {
+            System.Diagnostics.Trace.WriteLine(value);
         }
     }
 }

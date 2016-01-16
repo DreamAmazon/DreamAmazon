@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
 
@@ -57,6 +58,26 @@ namespace DreamAmazon
             {
                 if (Properties.Settings.Default.Mode == 0 || Properties.Settings.Default.Mode == 1)
                 {
+                    if (Context.IsDebug)
+                    {
+                        Context.Debug(_response.Value);
+                    }
+
+                    var captchaUrlResult = GetCaptchaUrl(_response.Value);
+
+                    if (captchaUrlResult.Failure)
+                    {
+                        var msg = "invalid url response:" + account.Email + " , " + captchaUrlResult.Error + " , " +
+                                  _response.Value;
+                        if (Context.IsDebug)
+                        {
+                            Context.Debug(msg);
+                        }
+                        Context.Logger.Debug(msg);
+                        Context.SetFinishState();
+                        return;
+                    }
+
                     var urlPaths = _response.Value.Split(new[] {"opfcaptcha-prod.s3.amazonaws.com"},
                         StringSplitOptions.None);
 
@@ -101,6 +122,7 @@ namespace DreamAmazon
                         {
                             Context.Logger.Debug("captcha decoded, counter reached, finish state object:" + account.Email);
                             Context.SetFinishState();
+                            Context.FireOnCheckCompleted(Context, CheckResults.Bad, Context.CheckParams);
                             return;
                         }
 
@@ -118,6 +140,7 @@ namespace DreamAmazon
                     {
                         Context.Logger.Debug("not dbc mode, counter reached, finish state object:" + account.Email);
                         Context.SetFinishState();
+                        Context.FireOnCheckCompleted(Context, CheckResults.Bad, Context.CheckParams);
                         return;
                     }
 
@@ -150,11 +173,32 @@ namespace DreamAmazon
             {
                 Context.Logger.Debug("gather information:" + account.Email);
                 Context.GatherInformation(nHelper, account);
-
                 Context.FireOnCheckCompleted(Context, CheckResults.Good, Context.CheckParams);
             }
 
             Context.SetFinishState();
+        }
+
+        private static Result<string> GetCaptchaUrl(string response)
+        {
+            foreach (var sRegex in GetCaptchaUrlRegex())
+            {
+                if (!Regex.IsMatch(response, sRegex))
+                    continue;
+
+                //var matches = Regex.Matches(response, sRegex);
+                //if (matches.Count > 1)
+                //{}
+
+                var match = Regex.Match(response, sRegex);
+                return Result.Ok(match.Value);
+            }
+            return Result.Fail<string>("can't find captcha image");
+        }
+
+        private static IEnumerable<string> GetCaptchaUrlRegex()
+        {
+            yield return "\"http.+captcha.+\\.jpg[^\"]*\"";
         }
     }
 }
