@@ -178,24 +178,25 @@ namespace DreamAmazon
         {
             Contracts.Require(checkParams != null);
 
+            NetHelper nHelper = new NetHelper { UserAgent = UserAgentsManager.GetRandomUserAgent() };
+
+            var context = new StateContext(_logger, _proxyManager, _captchaService, metadataFinder);
+            context.OnCheckCompleted += _context_OnCheckCompleted;
+
             try
             {
-                NetHelper nHelper = new NetHelper { UserAgent = UserAgentsManager.GetRandomUserAgent() };
-
-                var context = new StateContext(_logger, _proxyManager, _captchaService, metadataFinder);
-                context.OnCheckCompleted += _context_OnCheckCompleted;
                 context.Handle(checkParams, nHelper, token);
-                context.OnCheckCompleted -= _context_OnCheckCompleted;
             }
             catch (Exception exception)
             {
                 _logger.Debug("error while check");
                 _logger.Error(exception);
 
-                _accChecked++;
-                _badAccounts++;
-
-                FireOnCheckCompleted(CheckResults.Bad, checkParams);
+                _context_OnCheckCompleted(context, CheckResults.Bad, checkParams);
+            }
+            finally
+            {
+                context.OnCheckCompleted -= _context_OnCheckCompleted;
             }
         }
 
