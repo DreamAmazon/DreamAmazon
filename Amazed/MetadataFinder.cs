@@ -97,7 +97,7 @@ namespace DreamAmazon
         {
             while (!_breakWaitNavigation && _navigationCompleteAccount != account)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
 
             _navigationCompleteAccount = null;
@@ -112,7 +112,7 @@ namespace DreamAmazon
         {
             while (!_breakWaitResponse && !IsResponseExist(account))
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
 
             if (_breakWaitResponse)
@@ -125,7 +125,7 @@ namespace DreamAmazon
         {
             if (!IsQueryExist())
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
         }
 
