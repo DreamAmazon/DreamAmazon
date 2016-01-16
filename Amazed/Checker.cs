@@ -136,7 +136,6 @@ namespace DreamAmazon
 
             var exceptions = new ConcurrentQueue<Exception>();
 
-            var mFinder = MetadataFinder.Create();
 
             Parallel.ForEach(_accountManager.Accounts, options, account =>
             {
@@ -146,6 +145,7 @@ namespace DreamAmazon
 
                 try
                 {
+                    var mFinder = MetadataFinder.GetInstance();
                     Check(new CheckParams(account), token, mFinder);
                 }
                 catch (Exception exception)
@@ -160,9 +160,9 @@ namespace DreamAmazon
                 FireOnCheckCompleted(CheckResults.Init, null);
             });
 
-            mFinder.Dispose();
-            mFinder = null;
-            
+            //stop inner loops
+            MetadataFinder.GetInstance().Dispose();
+
             if (exceptions.Count > 0)
                 throw new AggregateException(exceptions);
         }

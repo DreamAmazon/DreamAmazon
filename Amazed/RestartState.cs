@@ -1,4 +1,3 @@
-using System;
 using System.Text.RegularExpressions;
 
 namespace DreamAmazon
@@ -38,7 +37,7 @@ namespace DreamAmazon
             {
                 Context.Logger.Debug("error detected, finish state object:" + Context.CheckParams.Account.Email);
                 Context.ProxyManager.RemoveProxy(nHelper.Proxy);
-                Context.SetFinishState();
+                Context.SetFinishState(CheckResults.Bad);
                 return;
             }
 

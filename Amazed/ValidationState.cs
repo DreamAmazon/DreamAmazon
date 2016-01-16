@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -28,7 +27,7 @@ namespace DreamAmazon
         {
             if (_response.Failure)
             {
-                Context.SetFinishState();
+                Context.SetFinishState(CheckResults.Bad);
                 return;
             }
 
@@ -38,15 +37,15 @@ namespace DreamAmazon
             if (StateContext.IsBadLog(_response.Value))
             {
                 Context.Logger.Debug("bad log detected:" + account.Email);
-                Context.FireOnCheckCompleted(Context, CheckResults.Bad, Context.CheckParams);
+                Context.SetFinishState(CheckResults.Bad);
+                return;
             }
-            else if (StateContext.IsSecurityQuestion(_response.Value))
+
+            if (StateContext.IsSecurityQuestion(_response.Value))
             {
                 Context.Logger.Debug("security question detected:" + account.Email);
                 nHelper.GET("http://amazon.com/homepage=true");
                 Context.GatherInformation(nHelper, account);
-
-                Context.FireOnCheckCompleted(Context, CheckResults.Good, Context.CheckParams);
             }
             else if (StateContext.IsCookiesDisabled(_response.Value))
             {
@@ -67,32 +66,20 @@ namespace DreamAmazon
 
                     if (captchaUrlResult.Failure)
                     {
-                        var msg = "invalid url response:" + account.Email + " , " + captchaUrlResult.Error + " , " +
-                                  _response.Value;
+                        var msg = captchaUrlResult.Error + ", " + account.Email + ":\r\n" + _response.Value;
                         if (Context.IsDebug)
                         {
                             Context.Debug(msg);
                         }
                         Context.Logger.Debug(msg);
-                        Context.SetFinishState();
+                        Context.SetFinishState(CheckResults.Bad);
                         return;
                     }
 
-                    var urlPaths = _response.Value.Split(new[] {"opfcaptcha-prod.s3.amazonaws.com"},
-                        StringSplitOptions.None);
-
-                    if (urlPaths.Length < 2)
-                    {
-                        Context.Logger.Debug("invalid url response:" + account.Email + " , " + _response.Value);
-                        Context.SetFinishState();
-                        return;
-                    }
-
-                    string captchaUrl = "https://opfcaptcha-prod.s3.amazonaws.com" + urlPaths[1].Split('"')[0];
                     byte[] captchaBytes;
 
                     using (WebClient wc = new WebClient())
-                        captchaBytes = wc.DownloadData(captchaUrl);
+                        captchaBytes = wc.DownloadData(captchaUrlResult.Value);
 
                     var captchaResult = Context.CaptchaService.DecodeCaptchaAsync(captchaBytes).Result;
 
@@ -121,8 +108,7 @@ namespace DreamAmazon
                         if (_captchaCounter >= CountersLimit)
                         {
                             Context.Logger.Debug("captcha decoded, counter reached, finish state object:" + account.Email);
-                            Context.SetFinishState();
-                            Context.FireOnCheckCompleted(Context, CheckResults.Bad, Context.CheckParams);
+                            Context.SetFinishState(CheckResults.Bad);
                             return;
                         }
 
@@ -139,8 +125,7 @@ namespace DreamAmazon
                     if (_notDbcModeCounter >= CountersLimit)
                     {
                         Context.Logger.Debug("not dbc mode, counter reached, finish state object:" + account.Email);
-                        Context.SetFinishState();
-                        Context.FireOnCheckCompleted(Context, CheckResults.Bad, Context.CheckParams);
+                        Context.SetFinishState(CheckResults.Bad);
                         return;
                     }
 
@@ -160,7 +145,6 @@ namespace DreamAmazon
             else if (StateContext.IsAnotherDevice(_response.Value))
             {
                 Context.Logger.Debug("is another device answer detected:" + account.Email);
-                Context.FireOnCheckCompleted(Context, CheckResults.Good, Context.CheckParams);
             }
             else if (StateContext.IsError(_response))
             {
@@ -173,10 +157,9 @@ namespace DreamAmazon
             {
                 Context.Logger.Debug("gather information:" + account.Email);
                 Context.GatherInformation(nHelper, account);
-                Context.FireOnCheckCompleted(Context, CheckResults.Good, Context.CheckParams);
             }
 
-            Context.SetFinishState();
+            Context.SetFinishState(CheckResults.Good);
         }
 
         private static Result<string> GetCaptchaUrl(string response)

@@ -27,7 +27,7 @@ namespace DreamAmazon
         private readonly ConcurrentQueue<Account> _queries = new ConcurrentQueue<Account>();
         private readonly ConcurrentDictionary<Account, string> _responses = new ConcurrentDictionary<Account, string>();
 
-        public static MetadataFinder Create()
+        public static MetadataFinder GetInstance()
         {
             if (_instance == null)
             {
@@ -66,13 +66,11 @@ namespace DreamAmazon
             _webBrowser = new System.Windows.Forms.WebBrowser();
             _webBrowser.DocumentCompleted += WebBrowserDocumentCompleted;
             _webBrowser.ScriptErrorsSuppressed = true;
-            //_webBrowser.Url = _mdUrl;
             System.Windows.Forms.Application.Run();
         }
 
         private void ProcessQueries()
         {
-            // never returns
             while (!_breakProcessQueue)
             {
                 WaitQueries();
@@ -125,10 +123,15 @@ namespace DreamAmazon
 
         private void WaitQueries()
         {
-            if (_queries.Count == 0)
+            if (!IsQueryExist())
             {
                 Thread.Sleep(1000);
             }
+        }
+
+        private bool IsQueryExist()
+        {
+            return _queries.Count > 0;
         }
 
         private bool IsResponseExist(Account account)
@@ -193,6 +196,7 @@ namespace DreamAmazon
             _webBrowser.DocumentCompleted -= WebBrowserDocumentCompleted;
             _webBrowser.Dispose();
             _webBrowser = null;
+            _instance = null;
         }
     }
 }

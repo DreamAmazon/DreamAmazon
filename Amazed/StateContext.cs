@@ -54,9 +54,10 @@ namespace DreamAmazon
             _currentState = _validationState;
         }
 
-        public void SetFinishState()
+        public void SetFinishState(CheckResults results)
         {
             _currentState = _emptyState;
+            FireOnCheckCompleted(results);
         }
 
         private bool IsFinishState(CheckState state)
@@ -184,7 +185,7 @@ namespace DreamAmazon
                         else if (addy == "oldPhoneNumber")
                             account.Phone = m.Groups[2].Value;
                         else
-                            Logger.Info(string.Format("unknown ADDY info:'{0}'", addy));
+                            Logger.Info($"unknown ADDY info:'{addy}'");
                     }
                 }
                 catch (Exception exception)
@@ -254,10 +255,10 @@ namespace DreamAmazon
         public delegate void CheckCompletedDelegate(StateContext context, CheckResults results, CheckParams checkParams);
         public event CheckCompletedDelegate OnCheckCompleted;
 
-        public void FireOnCheckCompleted(StateContext context, CheckResults results, CheckParams checkParams)
+        private void FireOnCheckCompleted(CheckResults results)
         {
             var evt = OnCheckCompleted;
-            evt?.Invoke(context, results, checkParams);
+            evt?.Invoke(this, results, CheckParams);
         }
 
         public void Debug(string value)
