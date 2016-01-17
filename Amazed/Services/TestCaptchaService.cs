@@ -1,5 +1,3 @@
-using System;
-using System.Threading;
 using System.Threading.Tasks;
 using DeathByCaptcha;
 using DreamAmazon.Events;
@@ -20,27 +18,27 @@ namespace DreamAmazon.Services
 
         public double GetBalance()
         {
-            return 1000;
+            return 999;
         }
 
-        public async Task<CaptchaDecodeResult> DecodeCaptchaAsync(byte[] image)
+        public Result<CaptchaDecodeResult> DecodeCaptcha(byte[] image)
         {
-            return await Task<CaptchaDecodeResult>.Factory.StartNew(() =>
-            {
-                Thread.Sleep(TimeSpan.FromSeconds(1));
-                var captchaResult = new CaptchaDecodeResult("123ab");
-                DebugCaptcha(image, new Captcha {Text = captchaResult.Text});
-                return captchaResult;
-            });
+            string text = "123ab";
+            var captchaResult = new CaptchaDecodeResult(text);
+            DebugCaptcha(image, new Captcha { Text = captchaResult.Text });
+            return Result.Ok(captchaResult);
+        }
+
+        public async Task<Result<CaptchaDecodeResult>> DecodeCaptchaAsync(byte[] image)
+        {
+            return await Task<Result<CaptchaDecodeResult>>.Factory.StartNew(() => DecodeCaptcha(image));
         }
 
         public async Task<CaptchaLoginResult> LoginAsync(string user, string pass)
         {
             return await Task<CaptchaLoginResult>.Factory.StartNew(() =>
             {
-                Thread.Sleep(1000);
                 _eventAggregator.SendMessage(new BalanceRetrievedMessage(GetBalance()));
-                Thread.Sleep(1000);
                 return new CaptchaLoginResult(true);
             });
         }

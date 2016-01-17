@@ -10,5 +10,6 @@ namespace DreamAmazon
         }
 
         public abstract void Handle(NetHelper nHelper);
+        public abstract void Init(string resposne);
     }
 }

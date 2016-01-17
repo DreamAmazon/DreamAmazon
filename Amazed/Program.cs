@@ -28,9 +28,6 @@ namespace DreamAmazon
 
         private static void RunInDebugMode()
         {
-            Application.ThreadException += Application_ThreadException;
-            AppDomain.CurrentDomain.UnhandledException += AppDomainUnhandledException;
-
             var context = CustomApplicationContext.Create(new SplashForm());
             Application.Run(context);
         }

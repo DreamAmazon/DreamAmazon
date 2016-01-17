@@ -21,5 +21,10 @@ namespace DreamAmazon
         {
             
         }
+
+        public override void Init(string resposne)
+        {
+            
+        }
     }
 }

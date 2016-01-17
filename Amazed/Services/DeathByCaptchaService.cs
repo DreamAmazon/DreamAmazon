@@ -27,23 +27,25 @@ namespace DreamAmazon.Services
             return balance;
         }
 
-        public async Task<CaptchaDecodeResult> DecodeCaptchaAsync(byte[] image)
+        public Result<CaptchaDecodeResult> DecodeCaptcha(byte[] image)
+        {
+            var captchaResult = _dbcClient.Decode(image, (int)TimeSpan.FromMinutes(2).TotalSeconds);
+
+            if (captchaResult != null && captchaResult.Solved && captchaResult.Correct)
+            {
+                if (_isDebugMode)
+                    DebugCaptcha(image, captchaResult);
+                return Result.Ok(new CaptchaDecodeResult(captchaResult.Text));
+            }
+
+            return Result.Fail<CaptchaDecodeResult>("captcha does not recognized");
+        }
+
+        public async Task<Result<CaptchaDecodeResult>> DecodeCaptchaAsync(byte[] image)
         {
             Contracts.Require(_dbcClient != null);
 
-            var task = Task<CaptchaDecodeResult>.Factory.StartNew(() =>
-            {
-                var captchaResult = _dbcClient.Decode(image, (int) TimeSpan.FromMinutes(2).TotalSeconds);
-
-                if (captchaResult != null && captchaResult.Solved && captchaResult.Correct)
-                {
-                    if (_isDebugMode)
-                        DebugCaptcha(image, captchaResult);
-                    return new CaptchaDecodeResult(captchaResult.Text);
-                }
-
-                return null;
-            });
+            var task = Task<Result<CaptchaDecodeResult>>.Factory.StartNew(() => DecodeCaptcha(image));
             return await task;
         }
 

@@ -55,7 +55,7 @@ namespace DreamAmazon.Controls
 
         private IEnumerable<decimal> GetPossibleValues()
         {
-            foreach (var value in new decimal[] { -1, 1, 2, 3, 4, 6, 12, 24 })
+            foreach (var value in new decimal[] { -1, 1, 2, 3, 4, 6, 12 })
             {
                 yield return value;
             }
@@ -63,6 +63,13 @@ namespace DreamAmazon.Controls
             {
                 yield return i;
             }
+        }
+
+        public CustomNumericUpDown()
+        {
+            var vals = GetPossibleValues().ToList();
+            Minimum = vals.Min();
+            Maximum = vals.Max();
         }
     }
 }

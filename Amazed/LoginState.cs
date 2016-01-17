@@ -2,12 +2,18 @@ using System.Text.RegularExpressions;
 
 namespace DreamAmazon
 {
-    public class RestartState : CheckState
+    public class LoginState : CheckState
     {
         private readonly Regex _attributesRegex = new Regex(Globals.REGEX, RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        private string _response;
 
-        public RestartState(StateContext context) : base(context)
+        public LoginState(StateContext context) : base(context)
         {
+        }
+
+        public override void Init(string resposne)
+        {
+            _response = resposne;
         }
 
         public override void Handle(NetHelper nHelper)
@@ -31,9 +37,11 @@ namespace DreamAmazon
                 }
             }
 
+            // should we use _response here ??
+
             var loginResponse = nHelper.GET(Globals.LOG_URL);
 
-            if (StateContext.IsError(loginResponse))
+            if (Context.IsError(loginResponse))
             {
                 Context.Logger.Debug("error detected, finish state object:" + Context.CheckParams.Account.Email);
                 Context.ProxyManager.RemoveProxy(nHelper.Proxy);
@@ -45,26 +53,21 @@ namespace DreamAmazon
             {
                 //todo:
                 Context.Logger.Debug("oops, robocheck detected");
+                Context.SetRoboState(loginResponse.Value);
+                return;
+            }
+
+            var attributes = StateContext.ParseAccountAttributes(loginResponse.Value, Context.CheckParams.Account, metadata);
+
+            var postResult = nHelper.POST(Globals.POST_URL, attributes);
+
+            if (Context.IsError(postResult))
+            {
                 Context.SetFinishState(CheckResults.Bad);
                 return;
             }
 
-            var attributes = StateContext.ParseAccountAttributes(Context.CheckParams.Account, metadata);
-
-            foreach (Match match in _attributesRegex.Matches(loginResponse.Value))
-            {
-                if (match.Groups.Count < 3)
-                    continue;
-
-                var key = match.Groups[1].Value;
-                var val = match.Groups[2].Value;
-
-                attributes.Add(key, val);
-            }
-
-            var postResult = nHelper.POST(Globals.POST_URL, attributes);
-
-            Context.SetValidationState(postResult);
+            Context.SetValidationState(postResult.Value);
         }
     }
 }

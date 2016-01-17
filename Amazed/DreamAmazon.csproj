@@ -75,6 +75,7 @@
     </Compile>
     <Compile Include="Account.cs" />
     <Compile Include="AccountManager.cs" />
+    <Compile Include="CaptchaState.cs" />
     <Compile Include="CustomApplicationContext.cs" />
     <Compile Include="AwaitableCounter.cs" />
     <Compile Include="Controls\CustomNumericUpDown.cs">
@@ -93,7 +94,7 @@
     <Compile Include="Interfaces\IProxyManager.cs" />
     <Compile Include="LoggedProxyManager.cs" />
     <Compile Include="ProxyManager.cs" />
-    <Compile Include="RestartState.cs" />
+    <Compile Include="LoginState.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="ResultExtensions.cs" />
     <Compile Include="Services\BaseCaptchaService.cs" />

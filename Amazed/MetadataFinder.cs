@@ -3,8 +3,6 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DreamAmazon.Interfaces;
-using Microsoft.Practices.ServiceLocation;
 
 namespace DreamAmazon
 {
@@ -16,7 +14,6 @@ namespace DreamAmazon
         private bool _breakWaitNavigation;
         private bool _breakWaitResponse;
         private bool _breakProcessQueue;
-        private readonly ILogger _logger;
 
         private readonly Uri _mdUrl = new Uri(string.Format("file:///{0}", Path.GetFullPath("md.html")));
 
@@ -26,6 +23,7 @@ namespace DreamAmazon
 
         private readonly ConcurrentQueue<Account> _queries = new ConcurrentQueue<Account>();
         private readonly ConcurrentDictionary<Account, string> _responses = new ConcurrentDictionary<Account, string>();
+        private Thread _browserThread;
 
         public static MetadataFinder GetInstance()
         {
@@ -43,8 +41,6 @@ namespace DreamAmazon
 
         protected MetadataFinder()
         {
-            _logger = ServiceLocator.Current.GetInstance<ILogger>();
-
             StartBrowserInSTA();
             StartProcessQueue();
         }
@@ -56,9 +52,9 @@ namespace DreamAmazon
 
         private void StartBrowserInSTA()
         {
-            var tokenThread = new Thread(StartBrowser) { IsBackground = true };
-            tokenThread.SetApartmentState(ApartmentState.STA);
-            tokenThread.Start();
+            _browserThread = new Thread(StartBrowser) { IsBackground = true };
+            _browserThread.SetApartmentState(ApartmentState.STA);
+            _browserThread.Start();
         }
 
         private void StartBrowser()
@@ -194,7 +190,8 @@ namespace DreamAmazon
         {
             BreakOperations();
             _webBrowser.DocumentCompleted -= WebBrowserDocumentCompleted;
-            _webBrowser.Dispose();
+            if (_browserThread.IsAlive)
+                _browserThread.Abort();
             _webBrowser = null;
             _instance = null;
         }

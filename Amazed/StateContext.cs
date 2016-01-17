@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,9 +20,13 @@ namespace DreamAmazon
         public bool IsDebug { get; }
 
         private CheckState _currentState;
-        private readonly CheckState _restartState;
-        private readonly CheckState _validationState;
+        private readonly CheckState _loginState;
+        private readonly ValidationState _validationState;
+        private readonly CaptchaState _captchaState;
         private readonly CheckState _emptyState;
+        private readonly RoboState _roboState;
+
+        private readonly ConcurrentStack<CheckState> _previousStates = new ConcurrentStack<CheckState>();
 
         public StateContext(ILogger logger, IProxyManager proxyManager, ICaptchaService captchaService, MetadataFinder metadataFinder)
         {
@@ -29,35 +35,16 @@ namespace DreamAmazon
             CaptchaService = captchaService;
             MetadataFinder = metadataFinder;
 
-            _restartState = new RestartState(this);
+            _loginState = new LoginState(this);
             _validationState = new ValidationState(this);
+            _captchaState = new CaptchaState(this);
+            _roboState = new RoboState(this);
             _emptyState = EmptyState.Create();
             _currentState = _emptyState;
 
 #if DEBUG
             IsDebug = true;
 #endif
-        }
-
-        public void SetRestartState()
-        {
-            _currentState = _restartState;
-        }
-
-        public void SetValidationState(Result<string> response)
-        {
-            var validationState = _validationState as ValidationState;
-            if (validationState == null)
-                throw new ApplicationException("invalid validation state type");
-
-            validationState.Init(response);
-            _currentState = _validationState;
-        }
-
-        public void SetFinishState(CheckResults results)
-        {
-            _currentState = _emptyState;
-            FireOnCheckCompleted(results);
         }
 
         private bool IsFinishState(CheckState state)
@@ -68,7 +55,7 @@ namespace DreamAmazon
         public void Handle(CheckParams checkParams, NetHelper nHelper, CancellationToken token)
         {
             CheckParams = checkParams;
-            SetRestartState();
+            SetLoginState();
             while (!IsFinishState(_currentState))
             {
                 if (token.IsCancellationRequested)
@@ -85,12 +72,29 @@ namespace DreamAmazon
 
         public static bool IsBadLog(string response)
         {
-            return response.Contains(Globals.BADLOG_MSG);
+            foreach (var s in Globals.BADLOG_MSG)
+            {
+                if (response.Contains(s))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
-        public static bool IsError(Result<string> response)
+        public bool IsError(Result<string> response)
         {
-            return response.Failure;
+            var result = response.Failure;
+            if (result)
+            {
+                var msg = response.Error;
+                if (IsDebug)
+                {
+                    Debug(msg);
+                }
+                Logger.Debug(msg);
+            }
+            return result;
         }
 
         public static bool IsCookiesDisabled(string response)
@@ -118,8 +122,9 @@ namespace DreamAmazon
             return response.Contains("we just need to make sure you're not a robot");
         }
 
-        public static Dictionary<string, string> ParseAccountAttributes(Account account, string metadata)
+        public static Dictionary<string, string> ParseAccountAttributes(string response, Account account, string metadata)
         {
+            Regex attributesRegex = new Regex(Globals.REGEX, RegexOptions.Multiline | RegexOptions.IgnoreCase);
             var random = new Random();
             var attributes = new Dictionary<string, string>
             {
@@ -131,11 +136,24 @@ namespace DreamAmazon
                 {"metadata1", metadata}
             };
 
+            foreach (Match match in attributesRegex.Matches(response))
+            {
+                if (match.Groups.Count < 3)
+                    continue;
+
+                var key = match.Groups[1].Value;
+                var val = match.Groups[2].Value;
+
+                attributes.Add(key, val);
+            }
+
             return attributes;
         }
 
         public void GatherInformation(NetHelper nHelper, Account account)
         {
+            Logger.Debug("gather information:" + account.Email);
+
             var tasks =
                 new List<Task>(new[]
                 {
@@ -269,6 +287,70 @@ namespace DreamAmazon
         public void Debug(string value)
         {
             System.Diagnostics.Trace.WriteLine(value);
+        }
+
+        public void SetPreviousState()
+        {
+            var state = GetPreviousState();
+            if (state != null)
+                _currentState = state;
+        }
+
+        public void SetPreviousState(string response)
+        {
+            var state = GetPreviousState();
+            if (state != null)
+            {
+                _currentState = state;
+                _currentState.Init(response);
+            }
+        }
+
+        private CheckState GetPreviousState()
+        {
+            CheckState state;
+            if (_previousStates.TryPop(out state))
+                return state;
+            return null;
+        }
+
+        private void SaveCurrentState()
+        {
+            _previousStates.Push(_currentState);
+        }
+
+        public void SetLoginState()
+        {
+            SaveCurrentState();
+            _currentState = _loginState;
+        }
+
+        public void SetValidationState(string response)
+        {
+            SaveCurrentState();
+            _validationState.Init(response);
+            _currentState = _validationState;
+        }
+
+        public void SetCaptchaState(string response)
+        {
+            SaveCurrentState();
+            _captchaState.Init(response);
+            _currentState = _captchaState;
+        }
+
+        public void SetRoboState(string response)
+        {
+            SaveCurrentState();
+            _roboState.Init(response);
+            _currentState = _roboState;
+        }
+
+        public void SetFinishState(CheckResults results)
+        {
+            SaveCurrentState();
+            _currentState = _emptyState;
+            FireOnCheckCompleted(results);
         }
     }
 }
