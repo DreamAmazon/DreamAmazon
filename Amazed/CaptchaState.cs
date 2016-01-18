@@ -4,21 +4,10 @@ using System.Text.RegularExpressions;
 
 namespace DreamAmazon
 {
-    public class RoboState : CaptchaState
-    {
-        public RoboState(StateContext context) : base(context)
-        {
-            PostUrl = @"https://www.amazon.com/errors/validateCaptcha";
-            GuessField = "field-keywords";
-        }
-    }
-
     public class CaptchaState : CheckState
     {
         protected string PostUrl;
         protected string GuessField;
-
-        private readonly Regex _attributesRegex = new Regex(Globals.REGEX, RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
         private const int CountersLimit = 3;
 
@@ -35,11 +24,6 @@ namespace DreamAmazon
         public override void Init(string response)
         {
             _response = response;
-        }
-
-        protected virtual KeyValuePair<string, string> GetGuessAttribute(string guessText)
-        {
-            return new KeyValuePair<string, string>("guess", guessText);
         }
 
         public override void Handle(NetHelper nHelper)
@@ -72,10 +56,8 @@ namespace DreamAmazon
 
                     var attributes = StateContext.ParseAccountAttributes(_response, account, metadata);
 
-                    //todo: not guess for robo
                     attributes.Add(GuessField, captchaResult.Value.Text);
 
-                    //todo: 
                     var postResponse = nHelper.POST(PostUrl, attributes);
 
                     if (Context.IsError(postResponse))

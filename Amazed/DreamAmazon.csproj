@@ -97,6 +97,7 @@
     <Compile Include="LoginState.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="ResultExtensions.cs" />
+    <Compile Include="RoboState.cs" />
     <Compile Include="Services\BaseCaptchaService.cs" />
     <Compile Include="Services\DeathByCaptchaService.cs" />
     <Compile Include="DeathByCaptcha\AccessDeniedException.cs" />
