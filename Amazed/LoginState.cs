@@ -1,10 +1,7 @@
-using System.Text.RegularExpressions;
-
 namespace DreamAmazon
 {
     public class LoginState : CheckState
     {
-        private readonly Regex _attributesRegex = new Regex(Globals.REGEX, RegexOptions.Multiline | RegexOptions.IgnoreCase);
         private string _response;
 
         public LoginState(StateContext context) : base(context)
@@ -51,8 +48,7 @@ namespace DreamAmazon
 
             if (StateContext.IsRoboCheck(loginResponse.Value))
             {
-                //todo:
-                Context.Logger.Debug("oops, robocheck detected");
+                Context.Logger.Debug("robocheck detected:" + Context.CheckParams.Account.Email);
                 Context.SetRoboState(loginResponse.Value);
                 return;
             }
