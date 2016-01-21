@@ -348,7 +348,6 @@ namespace DreamAmazon
             // duoMode
             // 
             this.duoMode.AutoSize = true;
-            this.duoMode.Enabled = false;
             this.duoMode.Location = new System.Drawing.Point(107, 27);
             this.duoMode.Name = "duoMode";
             this.duoMode.Size = new System.Drawing.Size(122, 18);
