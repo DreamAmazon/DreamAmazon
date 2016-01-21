@@ -111,7 +111,7 @@ namespace DreamAmazon
 
         public async Task<bool> InitCoreAsync()
         {
-            if (Properties.Settings.Default.Mode == 0 || Properties.Settings.Default.Mode == 1)
+            if (Properties.Settings.Default.Mode == (int)SettingMode.DuoMode || Properties.Settings.Default.Mode == (int)SettingMode.DbcMode)
             {
                 var loginResult = await _captchaService.LoginAsync(Properties.Settings.Default.DBCUser, Properties.Settings.Default.DBCPass);
                 return !loginResult.IsFail;

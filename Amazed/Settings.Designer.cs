@@ -43,8 +43,8 @@ namespace DreamAmazon
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label13 = new System.Windows.Forms.Label();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.rbAuthenticatedProxies = new System.Windows.Forms.RadioButton();
+            this.rbStandardProxies = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label11 = new System.Windows.Forms.Label();
@@ -187,8 +187,8 @@ namespace DreamAmazon
             // panel1
             // 
             this.panel1.Controls.Add(this.label13);
-            this.panel1.Controls.Add(this.radioButton2);
-            this.panel1.Controls.Add(this.radioButton1);
+            this.panel1.Controls.Add(this.rbAuthenticatedProxies);
+            this.panel1.Controls.Add(this.rbStandardProxies);
             this.panel1.Location = new System.Drawing.Point(242, 19);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(177, 81);
@@ -207,27 +207,27 @@ namespace DreamAmazon
             this.label13.Text = "Help ?";
             this.label13.Click += new System.EventHandler(this.label13_Click);
             // 
-            // radioButton2
+            // rbAuthenticatedProxies
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Enabled = false;
-            this.radioButton2.Location = new System.Drawing.Point(28, 32);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(131, 18);
-            this.radioButton2.TabIndex = 8;
-            this.radioButton2.Text = "Authenticated Proxies";
-            this.radioButton2.UseVisualStyleBackColor = true;
+            this.rbAuthenticatedProxies.AutoSize = true;
+            this.rbAuthenticatedProxies.Enabled = false;
+            this.rbAuthenticatedProxies.Location = new System.Drawing.Point(28, 32);
+            this.rbAuthenticatedProxies.Name = "rbAuthenticatedProxies";
+            this.rbAuthenticatedProxies.Size = new System.Drawing.Size(131, 18);
+            this.rbAuthenticatedProxies.TabIndex = 8;
+            this.rbAuthenticatedProxies.Text = "Authenticated Proxies";
+            this.rbAuthenticatedProxies.UseVisualStyleBackColor = true;
             // 
-            // radioButton1
+            // rbStandardProxies
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Enabled = false;
-            this.radioButton1.Location = new System.Drawing.Point(28, 8);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(108, 18);
-            this.radioButton1.TabIndex = 7;
-            this.radioButton1.Text = "Standard Proxies";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.rbStandardProxies.AutoSize = true;
+            this.rbStandardProxies.Enabled = false;
+            this.rbStandardProxies.Location = new System.Drawing.Point(28, 8);
+            this.rbStandardProxies.Name = "rbStandardProxies";
+            this.rbStandardProxies.Size = new System.Drawing.Size(108, 18);
+            this.rbStandardProxies.TabIndex = 7;
+            this.rbStandardProxies.Text = "Standard Proxies";
+            this.rbStandardProxies.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
@@ -310,6 +310,16 @@ namespace DreamAmazon
             // numericUpDown1
             // 
             this.numericUpDown1.Location = new System.Drawing.Point(554, 29);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            96,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(58, 20);
             this.numericUpDown1.TabIndex = 5;
@@ -485,8 +495,8 @@ namespace DreamAmazon
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.RadioButton rbAuthenticatedProxies;
+        private System.Windows.Forms.RadioButton rbStandardProxies;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox2;

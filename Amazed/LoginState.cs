@@ -19,7 +19,7 @@ namespace DreamAmazon
 
             Contracts.Require(metadata != null);
 
-            if (Properties.Settings.Default.Mode == 0 || Properties.Settings.Default.Mode == 2)
+            if (Properties.Settings.Default.Mode == (int)SettingMode.DuoMode || Properties.Settings.Default.Mode == (int)SettingMode.ProxiesMode)
             {
                 var proxy = Context.ProxyManager.GetProxy();
 

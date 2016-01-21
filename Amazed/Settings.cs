@@ -27,15 +27,21 @@ namespace DreamAmazon
 
             switch (Properties.Settings.Default.Mode)
             {
-                case 0: duoMode.Checked = true; break;
-                case 1: dbcMode.Checked = true; break;
-                case 2: proxiesMode.Checked = true; break;
+                case (int)SettingMode.DuoMode:
+                    duoMode.Checked = true;
+                    break;
+                case (int)SettingMode.DbcMode:
+                    dbcMode.Checked = true;
+                    break;
+                case (int)SettingMode.ProxiesMode:
+                    proxiesMode.Checked = true;
+                    break;
             }
 
             if (Properties.Settings.Default.ProxiesLogin)
-                radioButton2.Checked = true;
+                rbAuthenticatedProxies.Checked = true;
             else
-                radioButton1.Checked = true;
+                rbStandardProxies.Checked = true;
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -81,16 +87,16 @@ namespace DreamAmazon
             bool showProxiesBtn = true;
 
             if (duoMode.Checked)
-                Properties.Settings.Default.Mode = 0;
+                Properties.Settings.Default.Mode = (int)SettingMode.DuoMode;
             else if (dbcMode.Checked)
             {
-                Properties.Settings.Default.Mode = 1;
+                Properties.Settings.Default.Mode = (int)SettingMode.DbcMode;
                 showProxiesBtn = false;
             }
             else if (proxiesMode.Checked)
-                Properties.Settings.Default.Mode = 2;
+                Properties.Settings.Default.Mode = (int)SettingMode.ProxiesMode;
 
-            if (radioButton1.Checked)
+            if (rbStandardProxies.Checked)
                 Properties.Settings.Default.ProxiesLogin = false;
             else
                 Properties.Settings.Default.ProxiesLogin = true;

@@ -31,7 +31,7 @@ namespace DreamAmazon
             var account = Context.CheckParams.Account;
             var proxyManager = Context.ProxyManager;
 
-            if (Properties.Settings.Default.Mode == 0 || Properties.Settings.Default.Mode == 1)
+            if (Properties.Settings.Default.Mode == (int)SettingMode.DuoMode || Properties.Settings.Default.Mode == (int)SettingMode.DbcMode)
             {
                 var captchaUrlResult = GetCaptchaUrl(_response);
 
