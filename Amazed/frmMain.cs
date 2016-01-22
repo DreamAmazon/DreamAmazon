@@ -62,14 +62,14 @@ namespace DreamAmazon
                 UpdateUIInfos();
 
                 _cancellationTokenSource = new CancellationTokenSource();
-                BackgroundWorker bWorker = new BackgroundWorker();
-                bWorker.DoWork += ProcessStarted;
-                bWorker.RunWorkerCompleted += ProcessCompleted;
-                bWorker.RunWorkerAsync();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += ProcessStarted;
+                worker.RunWorkerCompleted += ProcessCompleted;
+                worker.RunWorkerAsync();
             }
             else
             {
-                MessageBox.Show("Please check your DBC Account, Amazed can't log into it.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowMessage("Please check your DBC Account, Amazed can't log into it.", MessageType.Error);
             }
         }
 
@@ -124,14 +124,14 @@ namespace DreamAmazon
         {
             UpdateAccountCounters();
 
-            checkStatusLbl.Text = String.Format("Checking {0} account{1}...", _accountsChecker.ActiveThreads,
+            checkStatusLbl.Text = string.Format("Checking {0} account{1}...", _accountsChecker.ActiveThreads,
                 _accountsChecker.ActiveThreads > 1 ? "s" : "");
             if (_accountsChecker.AccountsChecked >= toolStripProgressBar1.Minimum &&
                 _accountsChecker.AccountsChecked <= toolStripProgressBar1.Maximum)
             {
                 toolStripProgressBar1.Value = _accountsChecker.AccountsChecked;
             }
-            percentLbl.Text = String.Format("- {0}%", _accountsChecker.AccountsChecked*100/_accountManager.Count);
+            percentLbl.Text = string.Format("- {0}%", _accountsChecker.AccountsChecked*100/_accountManager.Count);
         }
 
         private void UpdateAccountCounters()
@@ -170,18 +170,18 @@ namespace DreamAmazon
             btnStop.Visible = false;
 
             if (e.Error != null)
-                MessageBox.Show(e.Error.Message, "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowMessage(e.Error.Message, MessageType.Error);
         }
 
         #region Load Files
 
-        private void loadProxiesBtn_Click_1(object sender, EventArgs e)
+        private void loadProxiesBtn_Click(object sender, EventArgs e)
         {
             checkStatusLbl.Text = "Idle";
             LoadProxies();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void loadAccBtn_Click(object sender, EventArgs e)
         {
             checkStatusLbl.Text = "Idle";
             LoadAccounts();
@@ -202,18 +202,18 @@ namespace DreamAmazon
                     _accountManager.Clear();
                     _accountsChecker.ResetCounters();
                     
-                    foreach (String line in File.ReadAllLines(ofd.FileName))
+                    foreach (string line in File.ReadAllLines(ofd.FileName))
                     {
                         if (line.Contains(":"))
                         {
-                            String email = line.Split(':')[0];
-                            String pass = line.Split(':')[1];
+                            string email = line.Split(':')[0];
+                            string pass = line.Split(':')[1];
 
                             if (email.Contains('@') && pass.Length != 0)
                                 _accountManager.QueueAccount(email, pass);
                         }
                     }
-                    loadAccBtn.Text = String.Format("Load Accounts ({0})", _accountManager.Count);
+                    loadAccBtn.Text = string.Format("Load Accounts ({0})", _accountManager.Count);
 
                     if (_accountManager.Count > 0 && (_proxyManager.Count > 0 || !loadProxiesBtn.Visible))
                         checkBtn.Enabled = true;
@@ -269,14 +269,14 @@ namespace DreamAmazon
             if (listView1.SelectedItems.Count != 0)
             {
                 ListViewItem li = listView1.SelectedItems[0];
-                String email = li.Text;
-                String password = li.SubItems[1].Text;
-                String gc = li.SubItems[2].Text;
-                String orders = li.SubItems[3].Text == "" ? "None" : li.SubItems[3].Text;
-                String zip = li.SubItems[4].Text == "" ? "None" : li.SubItems[4].Text;
-                String phone = li.SubItems[5].Text == "" ? "None" : li.SubItems[5].Text;
+                string email = li.Text;
+                string password = li.SubItems[1].Text;
+                string gc = li.SubItems[2].Text;
+                string orders = li.SubItems[3].Text == "" ? "None" : li.SubItems[3].Text;
+                string zip = li.SubItems[4].Text == "" ? "None" : li.SubItems[4].Text;
+                string phone = li.SubItems[5].Text == "" ? "None" : li.SubItems[5].Text;
 
-                String output = "";
+                string output;
 
                 if ((sender as ToolStripItem).Name == "singleLine")
                 {
@@ -298,8 +298,8 @@ namespace DreamAmazon
 
         private void ExportToFile(bool detailed)
         {
-            String style = "";
-            String output = "";
+            string style;
+            string output = "";
 
             if (detailed)
                 style = Properties.Settings.Default.CleanOutput;
@@ -312,18 +312,18 @@ namespace DreamAmazon
                 sfd.FileName = DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString().Replace(":", "h ") + " Accounts.txt";
                 sfd.Filter = "Text Files (*.txt)|*.txt";
 
-                if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     foreach (ListViewItem li in listView1.Items)
                     {
-                        String email = li.Text;
-                        String password = li.SubItems[1].Text;
-                        String gc = li.SubItems[2].Text;
-                        String orders = li.SubItems[3].Text == "" ? "None" : li.SubItems[3].Text;
-                        String zip = li.SubItems[4].Text == "" ? "None" : li.SubItems[4].Text;
-                        String phone = li.SubItems[5].Text == "" ? "None" : li.SubItems[5].Text;
+                        string email = li.Text;
+                        string password = li.SubItems[1].Text;
+                        string gc = li.SubItems[2].Text;
+                        string orders = li.SubItems[3].Text == "" ? "None" : li.SubItems[3].Text;
+                        string zip = li.SubItems[4].Text == "" ? "None" : li.SubItems[4].Text;
+                        string phone = li.SubItems[5].Text == "" ? "None" : li.SubItems[5].Text;
 
-                        String data = "";
+                        string data = string.Empty;
                         data += style;
                         data = data.Replace("{Email}", email);
                         data = data.Replace("{Password}", password);
@@ -364,7 +364,7 @@ namespace DreamAmazon
         {
             if (Application.OpenForms["About"] == null || Application.OpenForms["About"].Visible == false)
             {
-                About ab = new About();
+                frmAbout ab = new frmAbout();
                 ab.Show();
             }
         }

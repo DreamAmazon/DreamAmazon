@@ -5,7 +5,7 @@ using DreamAmazon.Models;
 
 namespace DreamAmazon.Presenters
 {
-    public class SettingsViewPresenter
+    public class SettingsViewPresenter : BasePresenter
     {
         private readonly ISettingsView _view;
         private readonly ICaptchaService _captchaService;
@@ -75,7 +75,7 @@ namespace DreamAmazon.Presenters
 
         public void Start()
         {
-            if (IsViewActive("Settings"))
+            if (IsViewActive("frmSettings"))
             {
                 LoadSettings(Settings);
                 _view.BindSettings(Settings);

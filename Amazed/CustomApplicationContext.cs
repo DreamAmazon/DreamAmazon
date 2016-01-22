@@ -11,6 +11,7 @@ namespace DreamAmazon
     {
         private bool _isLicenseValid;
         private bool _isLicenseValidated;
+        private LicenseViewPresenter _licensePresenter;
 
         public static CustomApplicationContext Current { get; private set; }
 
@@ -27,6 +28,14 @@ namespace DreamAmazon
             presenter.Start();
         }
 
+        private void ShowLicenseView()
+        {
+            var form = new frmLicense();
+            _licensePresenter = new LicenseViewPresenter(form);
+            MainForm = form;
+            _licensePresenter.Start();
+        }
+
         private CustomApplicationContext(Form splash)
             : base(splash)
         {
@@ -39,7 +48,7 @@ namespace DreamAmazon
             if (string.IsNullOrEmpty(Properties.Settings.Default.LicenseKey))
             {
                 // ask user about license key
-                CreateMainForm<LicenseForm>();
+                ShowLicenseView();
             }
             else
             {
@@ -105,16 +114,16 @@ namespace DreamAmazon
 
         protected override void OnMainFormClosed(object sender, EventArgs e)
         {
-            if (sender is LicenseForm)
+            if (sender is frmLicense)
             {
-                if (!(sender as LicenseForm).RealClose)
+                if (!_licensePresenter.RealClose)
                 {
                     // closed with correct license key
                     ShowMainView();
                     return;
                 }
             }
-            else if (sender is SplashForm)
+            else if (sender is frmSplash)
             {
                 if (_isLicenseValidated && _isLicenseValid)
                 {

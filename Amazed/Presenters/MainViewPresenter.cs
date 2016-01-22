@@ -5,7 +5,7 @@ using Microsoft.Practices.ServiceLocation;
 
 namespace DreamAmazon.Presenters
 {
-    public class MainViewPresenter : IListener<BalanceRetrievedMessage>
+    public class MainViewPresenter : BasePresenter, IListener<BalanceRetrievedMessage>
     {
         private readonly IMainView _view;
 

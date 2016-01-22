@@ -1,6 +1,6 @@
 ﻿namespace DreamAmazon
 {
-    partial class About
+    partial class frmAbout
     {
         /// <summary>
         /// Required designer variable.

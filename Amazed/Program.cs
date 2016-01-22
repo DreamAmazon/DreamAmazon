@@ -28,7 +28,7 @@ namespace DreamAmazon
 
         private static void RunInDebugMode()
         {
-            var context = CustomApplicationContext.Create(new SplashForm());
+            var context = CustomApplicationContext.Create(new frmSplash());
             Application.Run(context);
         }
 
@@ -48,7 +48,7 @@ namespace DreamAmazon
 
             try
             {
-                var context = CustomApplicationContext.Create(new SplashForm());
+                var context = CustomApplicationContext.Create(new frmSplash());
                 Application.Run(context);
             }
             catch (Exception ex)

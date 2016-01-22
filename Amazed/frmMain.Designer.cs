@@ -171,7 +171,7 @@
             this.loadAccBtn.TabIndex = 0;
             this.loadAccBtn.Text = "Load Accounts (0)";
             this.loadAccBtn.UseVisualStyleBackColor = true;
-            this.loadAccBtn.Click += new System.EventHandler(this.button2_Click);
+            this.loadAccBtn.Click += new System.EventHandler(this.loadAccBtn_Click);
             // 
             // groupBox1
             // 
@@ -312,7 +312,7 @@
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(279, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(443, 17);
             this.toolStripStatusLabel1.Spring = true;
             // 
             // toolStripStatusLabel2
@@ -362,8 +362,7 @@
             this.loadProxiesBtn.TabIndex = 8;
             this.loadProxiesBtn.Text = "Load Proxies (0)";
             this.loadProxiesBtn.UseVisualStyleBackColor = true;
-            this.loadProxiesBtn.Visible = false;
-            this.loadProxiesBtn.Click += new System.EventHandler(this.loadProxiesBtn_Click_1);
+            this.loadProxiesBtn.Click += new System.EventHandler(this.loadProxiesBtn_Click);
             // 
             // btnStop
             // 
@@ -376,7 +375,7 @@
             this.btnStop.Visible = false;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
-            // Main
+            // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -395,7 +394,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
-            this.Name = "Main";
+            this.Name = "frmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "DreamAmazon";
             this.contextMenuStrip1.ResumeLayout(false);

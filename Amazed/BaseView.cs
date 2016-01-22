@@ -2,7 +2,7 @@ using System.Windows.Forms;
 
 namespace DreamAmazon
 {
-    public abstract class BaseView : Form
+    public class BaseView : Form
     {
         public void ShowMessage(string text, MessageType type)
         {

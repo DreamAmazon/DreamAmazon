@@ -67,11 +67,11 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="About.cs">
+    <Compile Include="frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="About.Designer.cs">
-      <DependentUpon>About.cs</DependentUpon>
+    <Compile Include="frmAbout.Designer.cs">
+      <DependentUpon>frmAbout.cs</DependentUpon>
     </Compile>
     <Compile Include="Account.cs" />
     <Compile Include="AccountManager.cs" />
@@ -94,12 +94,13 @@
     <Compile Include="Contracts.cs" />
     <Compile Include="HtmlParser.cs" />
     <Compile Include="Interfaces\IAccountManager.cs" />
-    <Compile Include="Interfaces\IBaseView.cs" />
     <Compile Include="Interfaces\IMainView.cs" />
     <Compile Include="Interfaces\IProxyManager.cs" />
-    <Compile Include="Interfaces\ISettingsView.cs" />
     <Compile Include="LoggedProxyManager.cs" />
+    <Compile Include="Models\LicenseModel.cs" />
     <Compile Include="Models\SettingModel.cs" />
+    <Compile Include="Presenters\BasePresenter.cs" />
+    <Compile Include="Presenters\LicenseViewPresenter.cs" />
     <Compile Include="Presenters\MainViewPresenter.cs" />
     <Compile Include="Presenters\SettingsPresenter.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -125,11 +126,11 @@
     <Compile Include="Interfaces\ICaptchaService.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
     <Compile Include="License.cs" />
-    <Compile Include="LicenseForm.cs">
+    <Compile Include="frmLicense.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LicenseForm.Designer.cs">
-      <DependentUpon>LicenseForm.cs</DependentUpon>
+    <Compile Include="frmLicense.Designer.cs">
+      <DependentUpon>frmLicense.cs</DependentUpon>
     </Compile>
     <Compile Include="Log4NetLogger.cs" />
     <Compile Include="frmMain.cs">
@@ -152,21 +153,22 @@
     <Compile Include="SimpleJson\Reader.cs" />
     <Compile Include="SimpleJson\Writer.cs" />
     <Compile Include="MetadataFinder.cs" />
-    <Compile Include="SplashForm.cs">
+    <Compile Include="frmSplash.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SplashForm.Designer.cs">
-      <DependentUpon>SplashForm.cs</DependentUpon>
+    <Compile Include="frmSplash.Designer.cs">
+      <DependentUpon>frmSplash.cs</DependentUpon>
     </Compile>
     <Compile Include="StateContext.cs" />
     <Compile Include="UserAgentsManager.cs" />
     <Compile Include="ValidationState.cs" />
-    <EmbeddedResource Include="About.resx">
-      <DependentUpon>About.cs</DependentUpon>
+    <EmbeddedResource Include="frmAbout.resx">
+      <DependentUpon>frmAbout.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="LicenseForm.resx">
-      <DependentUpon>LicenseForm.cs</DependentUpon>
+    <EmbeddedResource Include="frmLicense.resx">
+      <DependentUpon>frmLicense.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
@@ -184,8 +186,8 @@
     <EmbeddedResource Include="frmSettings.resx">
       <DependentUpon>frmSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SplashForm.resx">
-      <DependentUpon>SplashForm.cs</DependentUpon>
+    <EmbeddedResource Include="frmSplash.resx">
+      <DependentUpon>frmSplash.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="log4net.config">

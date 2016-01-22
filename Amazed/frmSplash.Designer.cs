@@ -1,6 +1,6 @@
 ﻿namespace DreamAmazon
 {
-    partial class SplashForm
+    partial class frmSplash
     {
         /// <summary>
         /// Required designer variable.
