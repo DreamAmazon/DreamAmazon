@@ -5,13 +5,13 @@ using DreamAmazon.Models;
 
 namespace DreamAmazon.Presenters
 {
-    public class SettingsPresenter
+    public class SettingsViewPresenter
     {
         private readonly ISettingsView _view;
         private readonly ICaptchaService _captchaService;
         public SettingModel Settings;
 
-        public SettingsPresenter(ISettingsView view, ICaptchaService captchaService)
+        public SettingsViewPresenter(ISettingsView view, ICaptchaService captchaService)
         {
             Contracts.Require(view != null);
             Contracts.Require(captchaService != null);

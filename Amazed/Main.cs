@@ -376,7 +376,7 @@ namespace DreamAmazon
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var presenter = new SettingsPresenter(new frmSettings(), _captchaService);
+            var presenter = new SettingsViewPresenter(new frmSettings(), _captchaService);
             presenter.Start();
         }
 
