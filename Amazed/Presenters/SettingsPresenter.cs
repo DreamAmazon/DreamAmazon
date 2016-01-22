@@ -9,15 +9,17 @@ namespace DreamAmazon.Presenters
     {
         private readonly ISettingsView _view;
         private readonly ICaptchaService _captchaService;
+        private readonly ISettingsService _settingsService;
         public SettingModel Settings;
 
-        public SettingsViewPresenter(ISettingsView view, ICaptchaService captchaService)
+        public SettingsViewPresenter(ISettingsView view, ICaptchaService captchaService, ISettingsService settingsService)
         {
             Contracts.Require(view != null);
             Contracts.Require(captchaService != null);
 
             _view = view;
             _captchaService = captchaService;
+            _settingsService = settingsService;
 
             Settings = LoadSettings();
             Settings.PropertyChanged += SettingsPropertyChanged;
@@ -55,22 +57,20 @@ namespace DreamAmazon.Presenters
 
         private void LoadSettings(SettingModel setting)
         {
-            setting.ShortOutput = Properties.Settings.Default.ShortOutput;
-            setting.CleanOutput = Properties.Settings.Default.CleanOutput;
-            setting.DBCUser = Properties.Settings.Default.DBCUser;
-            setting.DBCPass = Properties.Settings.Default.DBCPass;
-            setting.ThreadsCount = Properties.Settings.Default.Threads;
-            setting.UseSecureProxies = Properties.Settings.Default.ProxiesLogin;
-            setting.SettingMode = (SettingMode)Properties.Settings.Default.Mode;
+            var s = _settingsService.GetSettings();
+            
+            setting.ShortOutput = s.ShortOutput;
+            setting.CleanOutput = s.CleanOutput;
+            setting.DBCUser = s.DBCUser;
+            setting.DBCPass = s.DBCPass;
+            setting.ThreadsCount = s.ThreadsCount;
+            setting.UseSecureProxies = s.UseSecureProxies;
+            setting.SettingMode = s.SettingMode;
         }
 
         public void SaveSettings()
         {
-            Properties.Settings.Default.ShortOutput = Settings.ShortOutput;
-            Properties.Settings.Default.CleanOutput = Settings.CleanOutput;
-            Properties.Settings.Default.Threads = Convert.ToInt32(Settings.ThreadsCount);
-            Properties.Settings.Default.ProxiesLogin = Settings.UseSecureProxies;
-            Properties.Settings.Default.Mode = (int)Settings.SettingMode;
+            _settingsService.SetSettings(Settings);
         }
 
         public void Start()
@@ -81,11 +81,6 @@ namespace DreamAmazon.Presenters
                 _view.BindSettings(Settings);
                 _view.Show();
             }
-        }
-
-        private static bool IsViewActive(string viewName)
-        {
-            return Application.OpenForms[viewName] == null || Application.OpenForms[viewName].Visible == false;
         }
     }
 }

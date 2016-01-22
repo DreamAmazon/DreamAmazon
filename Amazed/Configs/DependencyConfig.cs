@@ -25,6 +25,10 @@ namespace DreamAmazon.Configs
                 .As<IAccountManager>()
                 .SingleInstance();
 
+            builder.RegisterType<DefaultSettingsService>()
+                .As<ISettingsService>()
+                .SingleInstance();
+
             builder.RegisterType<LoggedProxyManager>()
                 .As<IProxyManager>()
                 .SingleInstance()

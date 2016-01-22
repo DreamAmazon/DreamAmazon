@@ -133,7 +133,7 @@ namespace DreamAmazon
             }
             else if (sender is frmMain)
             {
-                Properties.Settings.Default.Save();
+                ServiceLocator.Current.GetInstance<ISettingsService>().Save();
             }
             base.OnMainFormClosed(sender, e);
         }

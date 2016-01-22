@@ -19,6 +19,7 @@ namespace DreamAmazon
         private readonly ILogger _logger;
 
         private CancellationTokenSource _cancellationTokenSource;
+        private readonly ISettingsService _settingsService;
 
         public frmMain()
         {
@@ -28,6 +29,7 @@ namespace DreamAmazon
             _captchaService = ServiceLocator.Current.GetInstance<ICaptchaService>();
             _proxyManager = ServiceLocator.Current.GetInstance<IProxyManager>();
             _accountManager = ServiceLocator.Current.GetInstance<IAccountManager>();
+            _settingsService = ServiceLocator.Current.GetInstance<ISettingsService>();
 
             _accountsChecker = new Checker(_captchaService, _proxyManager, _accountManager);
 
@@ -371,7 +373,7 @@ namespace DreamAmazon
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var presenter = new SettingsViewPresenter(new frmSettings(), _captchaService);
+            var presenter = new SettingsViewPresenter(new frmSettings(), _captchaService, _settingsService);
             presenter.Start();
         }
 
