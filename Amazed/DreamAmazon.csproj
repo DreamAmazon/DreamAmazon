@@ -94,7 +94,7 @@
     <Compile Include="Contracts.cs" />
     <Compile Include="HtmlParser.cs" />
     <Compile Include="Interfaces\IAccountManager.cs" />
-    <Compile Include="Interfaces\IMainView.cs" />
+    <Compile Include="Interfaces\IView.cs" />
     <Compile Include="Interfaces\IProxyManager.cs" />
     <Compile Include="LoggedProxyManager.cs" />
     <Compile Include="Models\LicenseModel.cs" />

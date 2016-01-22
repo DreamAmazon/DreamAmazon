@@ -25,7 +25,7 @@ namespace DreamAmazon.Presenters
             _view.ValidateAccount += View_ValidateAccount;
         }
 
-        private async void View_ValidateAccount(object sender, EventArgs e)
+        public async void View_ValidateAccount()
         {
             var loginResult = await _captchaService.LoginAsync(Settings.DBCUser, Settings.DBCPass);
 

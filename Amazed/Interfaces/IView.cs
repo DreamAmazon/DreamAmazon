@@ -3,6 +3,8 @@ using DreamAmazon.Models;
 
 namespace DreamAmazon.Interfaces
 {
+    public delegate void VoidHandler();
+
     public interface IBaseView
     {
         void Show();
@@ -17,7 +19,7 @@ namespace DreamAmazon.Interfaces
     public interface ISettingsView : IBaseView
     {
         void BindSettings(SettingModel setting);
-        event EventHandler ValidateAccount;
+        event VoidHandler ValidateAccount;
     }
 
     public interface ILicenseView : IBaseView
