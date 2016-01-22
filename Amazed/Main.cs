@@ -6,6 +6,7 @@ using System.Threading;
 using System.Windows.Forms;
 using DreamAmazon.Events;
 using DreamAmazon.Interfaces;
+using DreamAmazon.Presenters;
 using EventAggregatorNet;
 using Microsoft.Practices.ServiceLocation;
 
@@ -375,20 +376,8 @@ namespace DreamAmazon
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Application.OpenForms["Settings"] == null || Application.OpenForms["Settings"].Visible == false)
-            {
-                Settings frmSettings = new Settings
-                {
-                    CaptchaService = _captchaService
-                };
-                frmSettings.OnSettingsSaved += set_OnSettingsSaved;
-                frmSettings.Show();
-            }
-        }
-
-        void set_OnSettingsSaved(bool showProxies)
-        {
-            loadProxiesBtn.Visible = showProxies;
+            var presenter = new SettingsPresenter(new Settings(), _captchaService);
+            presenter.Start();
         }
 
         public void Handle(BalanceRetrievedMessage message)

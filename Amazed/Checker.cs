@@ -114,7 +114,7 @@ namespace DreamAmazon
             if (Properties.Settings.Default.Mode == (int)SettingMode.DuoMode || Properties.Settings.Default.Mode == (int)SettingMode.DbcMode)
             {
                 var loginResult = await _captchaService.LoginAsync(Properties.Settings.Default.DBCUser, Properties.Settings.Default.DBCPass);
-                return !loginResult.IsFail;
+                return loginResult.Success;
             }
 
             return true;

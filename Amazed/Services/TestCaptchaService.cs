@@ -34,12 +34,12 @@ namespace DreamAmazon.Services
             return await Task<Result<CaptchaDecodeResult>>.Factory.StartNew(() => DecodeCaptcha(image));
         }
 
-        public async Task<CaptchaLoginResult> LoginAsync(string user, string pass)
+        public async Task<Result<CaptchaLoginResult>> LoginAsync(string user, string pass)
         {
-            return await Task<CaptchaLoginResult>.Factory.StartNew(() =>
+            return await Task<Result<CaptchaLoginResult>>.Factory.StartNew(() =>
             {
                 _eventAggregator.SendMessage(new BalanceRetrievedMessage(GetBalance()));
-                return new CaptchaLoginResult(true);
+                return Result.Ok(new CaptchaLoginResult());
             });
         }
     }

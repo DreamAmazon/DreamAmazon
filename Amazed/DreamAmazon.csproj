@@ -92,7 +92,11 @@
     <Compile Include="HtmlParser.cs" />
     <Compile Include="Interfaces\IAccountManager.cs" />
     <Compile Include="Interfaces\IProxyManager.cs" />
+    <Compile Include="Interfaces\ISettingsView.cs" />
     <Compile Include="LoggedProxyManager.cs" />
+    <Compile Include="Models\SettingModel.cs" />
+    <Compile Include="Presenters\SettingsPresenter.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ProxyManager.cs" />
     <Compile Include="LoginState.cs" />
     <Compile Include="Result.cs" />

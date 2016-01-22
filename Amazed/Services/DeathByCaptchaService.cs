@@ -49,9 +49,9 @@ namespace DreamAmazon.Services
             return await task;
         }
 
-        public async Task<CaptchaLoginResult> LoginAsync(string dbcUser, string dbcPass)
+        public async Task<Result<CaptchaLoginResult>> LoginAsync(string dbcUser, string dbcPass)
         {
-            var task = Task<CaptchaLoginResult>.Factory.StartNew(() =>
+            var task = Task<Result<CaptchaLoginResult>>.Factory.StartNew(() =>
             {
                 _dbcClient = new SocketClient(dbcUser, dbcPass) {Verbose = true};
 
@@ -65,15 +65,15 @@ namespace DreamAmazon.Services
 
                     if (user.LoggedIn && !user.Banned)
                     {
-                        return new CaptchaLoginResult(true);
+                        return Result.Ok(new CaptchaLoginResult());
                     }
                     _dbcClient = null;
-                    return new CaptchaLoginResult(false);
+                    return Result.Fail<CaptchaLoginResult>("not logged in or banned");
                 }
-                catch (System.Exception)
+                catch (System.Exception exception)
                 {
                     _dbcClient = null;
-                    return new CaptchaLoginResult(false);
+                    return Result.Fail<CaptchaLoginResult>(exception.Message);
                 }
             });
 

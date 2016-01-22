@@ -7,6 +7,6 @@ namespace DreamAmazon.Interfaces
         double GetBalance();
         Result<CaptchaDecodeResult> DecodeCaptcha(byte[] image);
         Task<Result<CaptchaDecodeResult>> DecodeCaptchaAsync(byte[] image);
-        Task<CaptchaLoginResult> LoginAsync(string user, string pass);
+        Task<Result<CaptchaLoginResult>> LoginAsync(string user, string pass);
     }
 }
