@@ -8,5 +8,6 @@ namespace DreamAmazon.Interfaces
         void Show();
         void BindSettings(SettingModel setting);
         event EventHandler ValidateAccount;
+        void ShowMessage(string text, MessageType type);
     }
 }

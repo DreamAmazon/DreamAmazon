@@ -4,6 +4,14 @@
     {
         DuoMode,
         DbcMode,
-        ProxiesMode
+        ProxiesMode,
+        None = 9
+    }
+
+    public enum MessageType
+    {
+        Info,
+        Error,
+        Warning
     }
 }

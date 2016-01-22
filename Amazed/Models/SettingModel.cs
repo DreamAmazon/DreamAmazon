@@ -80,6 +80,35 @@ namespace DreamAmazon.Models
             }
         }
 
+        public bool UseStandardProxies
+        {
+            get { return !UseSecureProxies; }
+            set
+            {
+                if (value == !UseSecureProxies) return;
+                UseSecureProxies = !value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsDuoMode
+        {
+            get { return SettingMode == SettingMode.DuoMode; }
+            set { SettingMode = value ? SettingMode.DuoMode : SettingMode.None; }
+        }
+
+        public bool IsDbcMode
+        {
+            get { return SettingMode == SettingMode.DbcMode; }
+            set { SettingMode = value ? SettingMode.DbcMode : SettingMode.None; }
+        }
+
+        public bool IsProxiesMode
+        {
+            get { return SettingMode == SettingMode.ProxiesMode; }
+            set { SettingMode = value ? SettingMode.ProxiesMode : SettingMode.None; }
+        }
+
         public SettingMode SettingMode
         {
             get { return _settingMode; }

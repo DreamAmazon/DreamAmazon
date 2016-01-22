@@ -2,7 +2,7 @@
 
 namespace DreamAmazon
 {
-    partial class Settings
+    partial class frmSettings
     {
         /// <summary>
         /// Required designer variable.

@@ -25,26 +25,17 @@ namespace DreamAmazon.Presenters
             _view.ValidateAccount += View_ValidateAccount;
         }
 
-        private void View_ViewClosed(object sender, EventArgs e)
-        {
-            //SaveSettings();
-        }
-
         private async void View_ValidateAccount(object sender, EventArgs e)
         {
             var loginResult = await _captchaService.LoginAsync(Settings.DBCUser, Settings.DBCPass);
 
             if (loginResult.Success)
             {
-                MessageBox.Show("Your DBC Account has been validated !",
-                    "DreamAmazon",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _view.ShowMessage("Your DBC Account has been validated !", MessageType.Info);
             }
             else
             {
-                MessageBox.Show("This DBC Account is not valid, please confirm your login details !",
-                    "DreamAmazon",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _view.ShowMessage("This DBC Account is not valid, please confirm your login details !", MessageType.Error);
             }
 
             SaveSettings();

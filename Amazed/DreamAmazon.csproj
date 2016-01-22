@@ -137,11 +137,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\TestCaptchaService.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="Settings.cs">
+    <Compile Include="frmSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Settings.Designer.cs">
-      <DependentUpon>Settings.cs</DependentUpon>
+    <Compile Include="frmSettings.Designer.cs">
+      <DependentUpon>frmSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="SimpleJson\Reader.cs" />
     <Compile Include="SimpleJson\Writer.cs" />
@@ -175,8 +175,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Settings.resx">
-      <DependentUpon>Settings.cs</DependentUpon>
+    <EmbeddedResource Include="frmSettings.resx">
+      <DependentUpon>frmSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SplashForm.resx">
       <DependentUpon>SplashForm.cs</DependentUpon>
