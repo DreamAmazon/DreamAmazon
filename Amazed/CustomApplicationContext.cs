@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 using DreamAmazon.Interfaces;
+using DreamAmazon.Presenters;
 using Microsoft.Practices.ServiceLocation;
 
 namespace DreamAmazon
@@ -18,12 +19,20 @@ namespace DreamAmazon
             return Current ?? (Current = new CustomApplicationContext(splash));
         }
 
+        private void ShowMainView()
+        {
+            var form = new frmMain();
+            var presenter = new MainViewPresenter(form);
+            MainForm = form;
+            presenter.Start();
+        }
+
         private CustomApplicationContext(Form splash)
             : base(splash)
         {
 #if DEBUG
             Globals.ProcessBypass();
-            CreateMainForm<Main>();
+            ShowMainView();
             return;
 #endif
 
@@ -101,7 +110,7 @@ namespace DreamAmazon
                 if (!(sender as LicenseForm).RealClose)
                 {
                     // closed with correct license key
-                    CreateMainForm<Main>();
+                    ShowMainView();
                     return;
                 }
             }
@@ -109,11 +118,11 @@ namespace DreamAmazon
             {
                 if (_isLicenseValidated && _isLicenseValid)
                 {
-                    CreateMainForm<Main>();
+                    ShowMainView();
                     return;
                 }
             }
-            else if (sender is Main)
+            else if (sender is frmMain)
             {
                 Properties.Settings.Default.Save();
             }

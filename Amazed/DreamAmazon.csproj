@@ -75,6 +75,9 @@
     </Compile>
     <Compile Include="Account.cs" />
     <Compile Include="AccountManager.cs" />
+    <Compile Include="BaseView.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="CaptchaState.cs" />
     <Compile Include="CustomApplicationContext.cs" />
     <Compile Include="AwaitableCounter.cs" />
@@ -91,10 +94,13 @@
     <Compile Include="Contracts.cs" />
     <Compile Include="HtmlParser.cs" />
     <Compile Include="Interfaces\IAccountManager.cs" />
+    <Compile Include="Interfaces\IBaseView.cs" />
+    <Compile Include="Interfaces\IMainView.cs" />
     <Compile Include="Interfaces\IProxyManager.cs" />
     <Compile Include="Interfaces\ISettingsView.cs" />
     <Compile Include="LoggedProxyManager.cs" />
     <Compile Include="Models\SettingModel.cs" />
+    <Compile Include="Presenters\MainViewPresenter.cs" />
     <Compile Include="Presenters\SettingsPresenter.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ProxyManager.cs" />
@@ -126,11 +132,11 @@
       <DependentUpon>LicenseForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Log4NetLogger.cs" />
-    <Compile Include="Main.cs">
+    <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Main.Designer.cs">
-      <DependentUpon>Main.cs</DependentUpon>
+    <Compile Include="frmMain.Designer.cs">
+      <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="NetHelper.cs" />
     <Compile Include="Program.cs" />
@@ -162,8 +168,8 @@
     <EmbeddedResource Include="LicenseForm.resx">
       <DependentUpon>LicenseForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Main.resx">
-      <DependentUpon>Main.cs</DependentUpon>
+    <EmbeddedResource Include="frmMain.resx">
+      <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

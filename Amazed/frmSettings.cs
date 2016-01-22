@@ -5,23 +5,9 @@ using DreamAmazon.Models;
 
 namespace DreamAmazon
 {
-    public partial class frmSettings : Form, ISettingsView
+    public partial class frmSettings : BaseView, ISettingsView
     {
         public event EventHandler ValidateAccount;
-
-        public void ShowMessage(string text, MessageType type)
-        {
-            MessageBoxIcon icon = MessageBoxIcon.None;
-
-            if (type == MessageType.Info)
-                icon = MessageBoxIcon.Information;
-            else if (type == MessageType.Error)
-                icon = MessageBoxIcon.Error;
-            else if (type == MessageType.Warning)
-                icon = MessageBoxIcon.Warning;
-
-            MessageBox.Show(text, "DreamAmazon", MessageBoxButtons.OK, icon);
-        }
 
         public void BindSettings(SettingModel setting)
         {

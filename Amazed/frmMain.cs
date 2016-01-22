@@ -4,15 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using DreamAmazon.Events;
 using DreamAmazon.Interfaces;
 using DreamAmazon.Presenters;
-using EventAggregatorNet;
 using Microsoft.Practices.ServiceLocation;
 
 namespace DreamAmazon
 {
-    public partial class Main : Form, IListener<BalanceRetrievedMessage>
+    public partial class frmMain : BaseView, IMainView
     {
         private readonly Checker _accountsChecker;
         private readonly ICaptchaService _captchaService;
@@ -22,12 +20,9 @@ namespace DreamAmazon
 
         private CancellationTokenSource _cancellationTokenSource;
 
-        public Main()
+        public frmMain()
         {
             InitializeComponent();
-
-            var eventAggregator = ServiceLocator.Current.GetInstance<IEventAggregator>();
-            eventAggregator.AddListener(this);
 
             _logger = ServiceLocator.Current.GetInstance<ILogger>();
             _captchaService = ServiceLocator.Current.GetInstance<ICaptchaService>();
@@ -380,9 +375,9 @@ namespace DreamAmazon
             presenter.Start();
         }
 
-        public void Handle(BalanceRetrievedMessage message)
+        public void ShowStatusInfo(string text)
         {
-            toolStripStatusLabel2.Text = String.Format("DeathByCaptcha Balance : ${0}", message.Balance);
+            toolStripStatusLabel2.Text = text;
         }
     }
 }

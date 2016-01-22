@@ -71,8 +71,6 @@ namespace DreamAmazon.Presenters
             Properties.Settings.Default.Threads = Convert.ToInt32(Settings.ThreadsCount);
             Properties.Settings.Default.ProxiesLogin = Settings.UseSecureProxies;
             Properties.Settings.Default.Mode = (int)Settings.SettingMode;
-
-            Properties.Settings.Default.Save();
         }
 
         public void Start()

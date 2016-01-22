@@ -3,11 +3,9 @@ using DreamAmazon.Models;
 
 namespace DreamAmazon.Interfaces
 {
-    public interface ISettingsView
+    public interface ISettingsView : IBaseView
     {
-        void Show();
         void BindSettings(SettingModel setting);
         event EventHandler ValidateAccount;
-        void ShowMessage(string text, MessageType type);
     }
 }
