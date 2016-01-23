@@ -21,7 +21,7 @@ namespace DreamAmazon
 
         private CancellationTokenSource _cancellationTokenSource;
         private readonly ISettingsService _settingsService;
-        private SettingModel _setting;
+        private readonly SettingModel _setting;
 
         public frmMain()
         {
