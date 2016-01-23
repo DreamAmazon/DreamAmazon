@@ -30,12 +30,26 @@ namespace DreamAmazon.Controls
                 ParseEditText();
             }
             var values = PossibleValues;
+
+            _currentIndex = GetCurrentIndex(values);
             _currentIndex = Math.Min(_currentIndex + 1, values.Length - 1);
             var newValue = values[_currentIndex];
             if (newValue >= values.Min() && newValue <= values.Max())
             {
                 Value = newValue;
             }
+        }
+
+        private int GetCurrentIndex(decimal[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (values[i] == Value)
+                {
+                    return i;
+                }
+            }
+            return _currentIndex;
         }
 
         public override void DownButton()
@@ -45,6 +59,8 @@ namespace DreamAmazon.Controls
                 ParseEditText();
             }
             var values = PossibleValues;
+
+            _currentIndex = GetCurrentIndex(values);
             _currentIndex = Math.Max(_currentIndex - 1, 0);
             var newValue = values[_currentIndex];
             if (newValue >= values.Min() && newValue <= values.Max())

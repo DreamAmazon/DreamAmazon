@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using DreamAmazon.Interfaces;
 using DreamAmazon.Models;
 
@@ -20,7 +21,7 @@ namespace DreamAmazon
             textBox1.Enabled = true;
         }
 
-        public void SetValidationEnable(bool b)
+        public void EnableValidateLicense(bool b)
         {
             button1.Enabled = b;
         }
@@ -35,9 +36,9 @@ namespace DreamAmazon
             OnValidateLicense(textBox1.Text);
         }
 
-        public void BindSettings(LicenseModel license)
+        public void BindSettings(SettingModel setting)
         {
-            textBox1.DataBindings.Add("Text", license, "LicenseKey");
+            textBox1.DataBindings.Add(new BindingWithErrorProvider("Text", setting, "LicenseKey", true, DataSourceUpdateMode.OnPropertyChanged, errorProvider1));
         }
 
         protected virtual void OnValidateLicense(string e)

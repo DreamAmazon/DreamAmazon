@@ -9,12 +9,17 @@ namespace DreamAmazon
     {
         public event VoidHandler ValidateAccount;
 
+        public void EnableValidateAccount(bool b)
+        {
+            button1.Enabled = b;
+        }
+
         public void BindSettings(SettingModel setting)
         {
             textBox1.DataBindings.Add("Text", setting, "ShortOutput");
             textBox2.DataBindings.Add("Text", setting, "CleanOutput");
-            textBox3.DataBindings.Add("Text", setting, "DBCUser");
-            textBox4.DataBindings.Add("Text", setting, "DBCPass");
+            textBox3.DataBindings.Add(new BindingWithErrorProvider("Text", setting, "DBCUser", true, DataSourceUpdateMode.OnPropertyChanged, errorProvider1));
+            textBox4.DataBindings.Add(new BindingWithErrorProvider("Text", setting, "DBCPass", true, DataSourceUpdateMode.OnPropertyChanged, errorProvider1));
             numericUpDown1.DataBindings.Add("Value", setting, "ThreadsCount");
             rbAuthenticatedProxies.DataBindings.Add("Checked", setting, "UseSecureProxies");
             rbStandardProxies.DataBindings.Add("Checked", setting, "UseStandardProxies");

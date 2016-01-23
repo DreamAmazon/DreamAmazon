@@ -11,8 +11,7 @@ namespace DreamAmazon.Presenters
 
         public bool RealClose { get; protected set; }
 
-        public LicenseModel License;
-        private readonly SettingModel _setting;
+        public SettingModel Setting;
         private readonly ILogger _logger;
 
         public LicenseViewPresenter(ILicenseView view)
@@ -20,12 +19,11 @@ namespace DreamAmazon.Presenters
             Contracts.Require(view != null);
 
             var settingsService = ServiceLocator.Current.GetInstance<ISettingsService>();
-            _setting = settingsService.GetSettings();
+            Setting = settingsService.GetSettings();
             _logger = ServiceLocator.Current.GetInstance<ILogger>();
 
             _view = view;
-            License = new LicenseModel();
-            License.PropertyChanged += License_PropertyChanged;
+            Setting.PropertyChanged += License_PropertyChanged;
 
             _view.ValidateLicense += View_ValidateLicense;
 
@@ -34,15 +32,13 @@ namespace DreamAmazon.Presenters
 
         private async void View_ValidateLicense(object sender, string e)
         {
-            _setting.LicenseKey = License.LicenseKey;
-
             _view.DisableFileds();
 
             bool initResult;
 
             try
             {
-                initResult = await DreamAmazon.License.InitAsync(_setting.LicenseKey);
+                initResult = await License.InitAsync(Setting.LicenseKey);
             }
             catch (Exception exception)
             {
@@ -58,7 +54,7 @@ namespace DreamAmazon.Presenters
             if (!initResult)
             {
                 _view.ShowMessage("Your license key is invalid !", MessageType.Error);
-                _setting.LicenseKey = string.Empty;
+                Setting.LicenseKey = string.Empty;
                 RealClose = true;
             }
             else
@@ -73,7 +69,8 @@ namespace DreamAmazon.Presenters
         {
             if (e.PropertyName == "LicenseKey")
             {
-                _view.SetValidationEnable(License.LicenseKey.Length == 16);
+                var notifications = Validator.ValidateObject(Setting);
+                _view.EnableValidateLicense(notifications.GetMessages(e.PropertyName).Length == 0);
             }
         }
 
@@ -81,7 +78,7 @@ namespace DreamAmazon.Presenters
         {
             if (IsViewActive("frmLicense"))
             {
-                _view.BindSettings(License);
+                _view.BindSettings(Setting);
                 _view.Show();
             }
         }

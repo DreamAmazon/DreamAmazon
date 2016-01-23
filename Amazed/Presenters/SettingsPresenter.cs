@@ -1,6 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
-using DreamAmazon.Interfaces;
+﻿using DreamAmazon.Interfaces;
 using DreamAmazon.Models;
 
 namespace DreamAmazon.Presenters
@@ -46,6 +44,21 @@ namespace DreamAmazon.Presenters
         private void SettingsPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             SaveSettings();
+
+            if (e.PropertyName == "DBCUser" || e.PropertyName == "DBCPass")
+            {
+                ValidateAccountInfo(Settings);
+            }
+        }
+
+        private void ValidateAccountInfo(SettingModel setting)
+        {
+            var notification = Validator.ValidateObject(setting);
+
+            var m1 = notification.GetMessages("DBCUser");
+            var m2 = notification.GetMessages("DBCPass");
+
+            _view.EnableValidateAccount(m1.Length == 0 && m2.Length == 0);
         }
 
         private SettingModel LoadSettings()
@@ -66,6 +79,8 @@ namespace DreamAmazon.Presenters
             setting.ThreadsCount = s.ThreadsCount;
             setting.UseSecureProxies = s.UseSecureProxies;
             setting.SettingMode = s.SettingMode;
+
+            ValidateAccountInfo(setting);
         }
 
         public void SaveSettings()

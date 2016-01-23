@@ -20,14 +20,15 @@ namespace DreamAmazon.Interfaces
     {
         void BindSettings(SettingModel setting);
         event VoidHandler ValidateAccount;
+        void EnableValidateAccount(bool b);
     }
 
     public interface ILicenseView : IBaseView
     {
-        void BindSettings(LicenseModel license);
+        void BindSettings(SettingModel setting);
         event EventHandler<string> ValidateLicense;
         void DisableFileds();
         void EnableFields();
-        void SetValidationEnable(bool b);
+        void EnableValidateLicense(bool b);
     }
 }

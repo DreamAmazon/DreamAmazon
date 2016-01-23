@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using DreamAmazon.Annotations;
+using DreamAmazon.Interfaces;
 
 namespace DreamAmazon.Models
 {
-    public class SettingModel : INotifyPropertyChanged
+    public class SettingModel : INotifyPropertyChanged, IValidated
     {
         private string _shortOutput;
         private string _cleanOutput;
@@ -37,6 +38,7 @@ namespace DreamAmazon.Models
             }
         }
 
+        [MinLength(1)]
         public string DBCUser
         {
             get { return _dbcUser; }
@@ -48,6 +50,7 @@ namespace DreamAmazon.Models
             }
         }
 
+        [MinLength(1)]
         public string DBCPass
         {
             get { return _dbcPass; }
@@ -121,6 +124,7 @@ namespace DreamAmazon.Models
             }
         }
 
+        [Required, Length(16)]
         public string LicenseKey
         {
             get { return _licenseKey; }
@@ -138,6 +142,11 @@ namespace DreamAmazon.Models
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Validate(Notification notification)
+        {
+            
         }
     }
 }

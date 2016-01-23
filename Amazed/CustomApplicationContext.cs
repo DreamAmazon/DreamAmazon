@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 using DreamAmazon.Interfaces;
-using DreamAmazon.Models;
 using DreamAmazon.Presenters;
 using Microsoft.Practices.ServiceLocation;
 
@@ -13,8 +12,7 @@ namespace DreamAmazon
         private bool _isLicenseValid;
         private bool _isLicenseValidated;
         private LicenseViewPresenter _licensePresenter;
-        private ISettingsService _settingsService;
-        private SettingModel _setting;
+        private readonly ISettingsService _settingsService;
 
         public static CustomApplicationContext Current { get; private set; }
 
@@ -43,7 +41,6 @@ namespace DreamAmazon
             : base(splash)
         {
             _settingsService = ServiceLocator.Current.GetInstance<ISettingsService>();
-            _setting = _settingsService.GetSettings();
 
 #if DEBUG
             Globals.ProcessBypass();
@@ -51,7 +48,9 @@ namespace DreamAmazon
             return;
 #endif
 
-            if (string.IsNullOrEmpty(_setting.LicenseKey))
+            var setting = _settingsService.GetSettings();
+
+            if (string.IsNullOrEmpty(setting.LicenseKey))
             {
                 // ask user about license key
                 ShowLicenseView();
@@ -66,7 +65,7 @@ namespace DreamAmazon
                 worker.DoWork += (s, e) =>
                 {
                     e.Result = false;
-                    var initResult = License.Init(_setting.LicenseKey);
+                    var initResult = License.Init(setting.LicenseKey);
                     e.Result = initResult;
                 };
                 worker.RunWorkerCompleted += (s, e) =>

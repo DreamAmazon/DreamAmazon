@@ -67,6 +67,8 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes.cs" />
+    <Compile Include="BindingWithErrorProvider.cs" />
     <Compile Include="frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,11 +97,13 @@
     <Compile Include="HtmlParser.cs" />
     <Compile Include="Interfaces\IAccountManager.cs" />
     <Compile Include="Interfaces\ISettingsService.cs" />
+    <Compile Include="Interfaces\IValidated.cs" />
     <Compile Include="Interfaces\IView.cs" />
     <Compile Include="Interfaces\IProxyManager.cs" />
     <Compile Include="LoggedProxyManager.cs" />
-    <Compile Include="Models\LicenseModel.cs" />
     <Compile Include="Models\SettingModel.cs" />
+    <Compile Include="Notification.cs" />
+    <Compile Include="NotificationMessage.cs" />
     <Compile Include="Presenters\BasePresenter.cs" />
     <Compile Include="Presenters\LicenseViewPresenter.cs" />
     <Compile Include="Presenters\MainViewPresenter.cs" />
@@ -164,6 +168,7 @@
     <Compile Include="StateContext.cs" />
     <Compile Include="UserAgentsManager.cs" />
     <Compile Include="ValidationState.cs" />
+    <Compile Include="Validator.cs" />
     <EmbeddedResource Include="frmAbout.resx">
       <DependentUpon>frmAbout.cs</DependentUpon>
       <SubType>Designer</SubType>
