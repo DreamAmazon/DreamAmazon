@@ -11,27 +11,25 @@ namespace DreamAmazon
     {
         public static String VERSION = "1.0";
 
-        public static bool Init()
+        public static bool Init(string licenseKey)
         {
             using (WebClient wc = new WebClient())
             {
-                string key = Properties.Settings.Default.LicenseKey;
-                string output = wc.DownloadString(@"http://dreamzje.me/DreamAmzn/amazing.php?key=" + key + "&id=" + HWID.Generate());
-                string decrypted = DecryptData(output, ReverseString(key));
+                string output = wc.DownloadString(@"http://dreamzje.me/DreamAmzn/amazing.php?key=" + licenseKey + "&id=" + HWID.Generate());
+                string decrypted = DecryptData(output, ReverseString(licenseKey));
                 
-                return Globals.Process(key, decrypted);
+                return Globals.Process(licenseKey, decrypted);
             }
         }
 
-        public static async Task<bool> InitAsync()
+        public static async Task<bool> InitAsync(string licenseKey)
         {
             using (WebClient wc = new WebClient())
             {
-                string key = Properties.Settings.Default.LicenseKey;
-                string output = await wc.DownloadStringTaskAsync(@"http://dreamzje.me/DreamAmzn/amazing.php?key=" + key + "&id=" + HWID.Generate());
-                string decrypted = DecryptData(output, ReverseString(key));
+                string output = await wc.DownloadStringTaskAsync(@"http://dreamzje.me/DreamAmzn/amazing.php?key=" + licenseKey + "&id=" + HWID.Generate());
+                string decrypted = DecryptData(output, ReverseString(licenseKey));
                 
-                return Globals.Process(key, decrypted);
+                return Globals.Process(licenseKey, decrypted);
             }
         }
 

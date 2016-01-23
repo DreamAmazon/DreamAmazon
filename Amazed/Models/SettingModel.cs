@@ -13,6 +13,7 @@ namespace DreamAmazon.Models
         private decimal _threadsCount;
         private bool _useSecureProxies;
         private SettingMode _settingMode;
+        private string _licenseKey;
 
         public string ShortOutput
         {
@@ -116,6 +117,17 @@ namespace DreamAmazon.Models
             {
                 if (value == _settingMode) return;
                 _settingMode = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string LicenseKey
+        {
+            get { return _licenseKey; }
+            set
+            {
+                if (value == _licenseKey) return;
+                _licenseKey = value;
                 OnPropertyChanged();
             }
         }

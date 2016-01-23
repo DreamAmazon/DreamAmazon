@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
+using DreamAmazon.Interfaces;
+using DreamAmazon.Models;
+using Microsoft.Practices.ServiceLocation;
 
 namespace DreamAmazon
 {
@@ -14,11 +17,13 @@ namespace DreamAmazon
         private int _captchaCounter;
         private int _notDbcModeCounter;
         private string _response;
+        private SettingModel _setting;
 
         public CaptchaState(StateContext context) : base(context)
         {
             PostUrl = Globals.POST_URL;
             GuessField = "guess";
+            _setting = ServiceLocator.Current.GetInstance<ISettingsService>().GetSettings();
         }
 
         public override void Init(string response)
@@ -31,7 +36,7 @@ namespace DreamAmazon
             var account = Context.CheckParams.Account;
             var proxyManager = Context.ProxyManager;
 
-            if (Properties.Settings.Default.Mode == (int)SettingMode.DuoMode || Properties.Settings.Default.Mode == (int)SettingMode.DbcMode)
+            if (_setting.IsDuoMode || _setting.IsDbcMode)
             {
                 var captchaUrlResult = GetCaptchaUrl(_response);
 

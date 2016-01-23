@@ -1,11 +1,17 @@
+using DreamAmazon.Interfaces;
+using DreamAmazon.Models;
+using Microsoft.Practices.ServiceLocation;
+
 namespace DreamAmazon
 {
     public class LoginState : CheckState
     {
         private string _response;
+        private SettingModel _setting;
 
         public LoginState(StateContext context) : base(context)
         {
+            _setting = ServiceLocator.Current.GetInstance<ISettingsService>().GetSettings();
         }
 
         public override void Init(string resposne)
@@ -19,7 +25,7 @@ namespace DreamAmazon
 
             Contracts.Require(metadata != null);
 
-            if (Properties.Settings.Default.Mode == (int)SettingMode.DuoMode || Properties.Settings.Default.Mode == (int)SettingMode.ProxiesMode)
+            if (_setting.IsDuoMode || _setting.IsProxiesMode)
             {
                 var proxy = Context.ProxyManager.GetProxy();
 

@@ -12,10 +12,16 @@ namespace DreamAmazon.Presenters
         public bool RealClose { get; protected set; }
 
         public LicenseModel License;
+        private readonly SettingModel _setting;
+        private readonly ILogger _logger;
 
         public LicenseViewPresenter(ILicenseView view)
         {
             Contracts.Require(view != null);
+
+            var settingsService = ServiceLocator.Current.GetInstance<ISettingsService>();
+            _setting = settingsService.GetSettings();
+            _logger = ServiceLocator.Current.GetInstance<ILogger>();
 
             _view = view;
             License = new LicenseModel();
@@ -28,7 +34,7 @@ namespace DreamAmazon.Presenters
 
         private async void View_ValidateLicense(object sender, string e)
         {
-            Properties.Settings.Default.LicenseKey = License.LicenseKey;
+            _setting.LicenseKey = License.LicenseKey;
 
             _view.DisableFileds();
 
@@ -36,11 +42,11 @@ namespace DreamAmazon.Presenters
 
             try
             {
-                initResult = await DreamAmazon.License.InitAsync();
+                initResult = await DreamAmazon.License.InitAsync(_setting.LicenseKey);
             }
             catch (Exception exception)
             {
-                ServiceLocator.Current.GetInstance<ILogger>().Error(exception);
+                _logger.Error(exception);
 
                 _view.ShowMessage("Error while initializing components !", MessageType.Error);
 
@@ -52,7 +58,7 @@ namespace DreamAmazon.Presenters
             if (!initResult)
             {
                 _view.ShowMessage("Your license key is invalid !", MessageType.Error);
-                Properties.Settings.Default.LicenseKey = string.Empty;
+                _setting.LicenseKey = string.Empty;
                 RealClose = true;
             }
             else

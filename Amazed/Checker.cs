@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using DreamAmazon.Interfaces;
+using DreamAmazon.Models;
 using EventAggregatorNet;
 using Microsoft.Practices.ServiceLocation;
 
@@ -37,6 +38,8 @@ namespace DreamAmazon
         private readonly IAccountManager _accountManager;
         private readonly ILogger _logger;
         private readonly IEventAggregator _eventAggregator;
+        private ISettingsService _settingsService;
+        private SettingModel _setting;
 
         #endregion
 
@@ -90,6 +93,9 @@ namespace DreamAmazon
             _accountManager = accountManager;
             _logger = ServiceLocator.Current.GetInstance<ILogger>();
             _eventAggregator = ServiceLocator.Current.GetInstance<IEventAggregator>();
+            _settingsService = ServiceLocator.Current.GetInstance<ISettingsService>();
+
+            _setting = _settingsService.GetSettings();
         }
 
         private void _context_OnCheckCompleted(StateContext context, CheckResults results, CheckParams checkParams)
@@ -111,9 +117,9 @@ namespace DreamAmazon
 
         public async Task<bool> InitCoreAsync()
         {
-            if (Properties.Settings.Default.Mode == (int)SettingMode.DuoMode || Properties.Settings.Default.Mode == (int)SettingMode.DbcMode)
+            if (_setting.IsDuoMode || _setting.IsDbcMode)
             {
-                var loginResult = await _captchaService.LoginAsync(Properties.Settings.Default.DBCUser, Properties.Settings.Default.DBCPass);
+                var loginResult = await _captchaService.LoginAsync(_setting.DBCUser, _setting.DBCPass);
                 return loginResult.Success;
             }
 
@@ -131,7 +137,7 @@ namespace DreamAmazon
             ParallelOptions options = new ParallelOptions
             {
                 CancellationToken = token,
-                MaxDegreeOfParallelism = Properties.Settings.Default.Threads
+                MaxDegreeOfParallelism = Convert.ToInt32(_setting.ThreadsCount)
             };
 
             var exceptions = new ConcurrentQueue<Exception>();

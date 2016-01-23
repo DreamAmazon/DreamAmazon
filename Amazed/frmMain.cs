@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using DreamAmazon.Interfaces;
+using DreamAmazon.Models;
 using DreamAmazon.Presenters;
 using Microsoft.Practices.ServiceLocation;
 
@@ -20,6 +21,7 @@ namespace DreamAmazon
 
         private CancellationTokenSource _cancellationTokenSource;
         private readonly ISettingsService _settingsService;
+        private SettingModel _setting;
 
         public frmMain()
         {
@@ -30,6 +32,7 @@ namespace DreamAmazon
             _proxyManager = ServiceLocator.Current.GetInstance<IProxyManager>();
             _accountManager = ServiceLocator.Current.GetInstance<IAccountManager>();
             _settingsService = ServiceLocator.Current.GetInstance<ISettingsService>();
+            _setting = _settingsService.GetSettings();
 
             _accountsChecker = new Checker(_captchaService, _proxyManager, _accountManager);
 
@@ -99,7 +102,7 @@ namespace DreamAmazon
 
         private void LogAccountInfos(Account account)
         {
-            string output = Properties.Settings.Default.ShortOutput;
+            string output = _setting.ShortOutput;
 
             output = output.Replace("{Email}", account.Email)
                 .Replace("{Password}", account.Password)
@@ -244,7 +247,7 @@ namespace DreamAmazon
                         {
                             var data = line.Split(':');
 
-                            if (!Properties.Settings.Default.ProxiesLogin)
+                            if (_setting.UseStandardProxies)
                                 _proxyManager.QueueProxy(data[0], data[1]);
                             else
                                 _proxyManager.QueueProxy(data[0], data[1], data[2], data[3]);
@@ -282,10 +285,10 @@ namespace DreamAmazon
 
                 if ((sender as ToolStripItem).Name == "singleLine")
                 {
-                    output = Properties.Settings.Default.ShortOutput;
+                    output = _setting.ShortOutput;
                 }
                 else
-                    output = Properties.Settings.Default.CleanOutput;
+                    output = _setting.CleanOutput;
 
                 output = output.Replace("{Email}", email);
                 output = output.Replace("{Password}", password);
@@ -304,9 +307,9 @@ namespace DreamAmazon
             string output = "";
 
             if (detailed)
-                style = Properties.Settings.Default.CleanOutput;
+                style = _setting.CleanOutput;
             else
-                style = Properties.Settings.Default.ShortOutput;
+                style = _setting.ShortOutput;
 
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
