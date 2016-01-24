@@ -35,18 +35,18 @@ namespace DreamAmazon.Configs
                 .WithParameter("proxyManager", new ProxyManager());
 
             builder
-#if DEBUG
-                .RegisterType<TestCaptchaService>()
-#else
+//#if DEBUG
+//                .RegisterType<TestCaptchaService>()
+//#else
                 .RegisterType<DeathByCaptchaService>()
-#endif
+//#endif
                 .As<ICaptchaService>()
                 .SingleInstance()
-#if DEBUG
-                ;
-#else
+//#if DEBUG
+//                ;
+//#else
                 .WithParameter("debug", false);
-#endif
+//#endif
 
             var container = builder.Build();
             var csl = new Autofac.Extras.CommonServiceLocator.AutofacServiceLocator(container);
