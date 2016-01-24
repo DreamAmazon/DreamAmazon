@@ -25,12 +25,12 @@ namespace DreamAmazon.Presenters
             _view = view;
             Setting.PropertyChanged += License_PropertyChanged;
 
-            _view.ValidateLicense += View_ValidateLicense;
+            _view.ValidateLicenseRequested += View_ValidateLicenseRequested;
 
             RealClose = true;
         }
 
-        private async void View_ValidateLicense(object sender, string e)
+        private async void View_ValidateLicenseRequested(object sender, string e)
         {
             _view.DisableFileds();
 

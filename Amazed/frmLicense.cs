@@ -7,7 +7,7 @@ namespace DreamAmazon
 {
     public partial class frmLicense : BaseView, ILicenseView
     {
-        public event EventHandler<string> ValidateLicense;
+        public event EventHandler<string> ValidateLicenseRequested;
 
         public void DisableFileds()
         {
@@ -43,7 +43,7 @@ namespace DreamAmazon
 
         protected virtual void OnValidateLicense(string e)
         {
-            ValidateLicense?.Invoke(this, e);
+            ValidateLicenseRequested?.Invoke(this, e);
         }
     }
 }

@@ -123,5 +123,31 @@ namespace DreamAmazon
                 return Result.Fail<string>(exception.Message);
             }
         }
+
+        public static bool TestRequestConnect(IWebProxy proxy)
+        {
+            bool isOk = false;
+            try
+            {
+                HttpWebRequest request = HttpWebRequest.Create(new Uri("https://www.amazon.com/")) as HttpWebRequest;
+                request.KeepAlive = true;
+                //request.Credentials = CredentialCache.DefaultCredentials;
+                request.Proxy = proxy;
+                //request.Timeout = 5000;
+                var wresp = (HttpWebResponse)request.GetResponse();
+                string line;
+                using (var reader = new StreamReader(wresp.GetResponseStream()))
+                {
+                    line = reader.ReadToEnd();
+                }
+
+                isOk = !string.IsNullOrWhiteSpace(line);
+            }
+            catch (Exception)
+            {
+
+            }
+            return isOk;
+        }
     }
 }

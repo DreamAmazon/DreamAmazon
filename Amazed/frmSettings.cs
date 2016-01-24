@@ -7,7 +7,7 @@ namespace DreamAmazon
 {
     public partial class frmSettings : BaseView, ISettingsView
     {
-        public event VoidHandler ValidateAccount;
+        public event VoidHandler ValidateAccountRequested;
 
         public void EnableValidateAccount(bool b)
         {
@@ -56,7 +56,7 @@ namespace DreamAmazon
 
         protected virtual void OnValidateAccount()
         {
-            ValidateAccount?.Invoke();
+            ValidateAccountRequested?.Invoke();
         }
     }
 }

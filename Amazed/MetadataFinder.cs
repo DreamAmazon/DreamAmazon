@@ -164,7 +164,9 @@ namespace DreamAmazon
 
             if (browser.Document != null)
             {
-                var metadataToken = browser.Document.Body.InnerText.Replace("\r\n", "");
+                var innerText = browser.Document.Body.InnerText;
+
+                var metadataToken = innerText.Replace("\r\n", "");
 
                 while (!_responses.TryAdd(account, metadataToken))
                 {

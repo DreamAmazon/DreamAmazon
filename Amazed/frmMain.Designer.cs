@@ -154,14 +154,14 @@
             this.singleLine.Name = "singleLine";
             this.singleLine.Size = new System.Drawing.Size(118, 22);
             this.singleLine.Text = "Minimal";
-            this.singleLine.Click += new System.EventHandler(this.CopyToSelectedFormat);
+            this.singleLine.Click += new System.EventHandler(this.singleLine_Click);
             // 
             // details
             // 
             this.details.Name = "details";
             this.details.Size = new System.Drawing.Size(118, 22);
             this.details.Text = "Detailed";
-            this.details.Click += new System.EventHandler(this.CopyToSelectedFormat);
+            this.details.Click += new System.EventHandler(this.details_Click);
             // 
             // loadAccBtn
             // 
@@ -360,9 +360,9 @@
             this.loadProxiesBtn.Name = "loadProxiesBtn";
             this.loadProxiesBtn.Size = new System.Drawing.Size(119, 39);
             this.loadProxiesBtn.TabIndex = 8;
-            this.loadProxiesBtn.Text = "Load Proxies (0)";
+            this.loadProxiesBtn.Text = "Proxies (0)";
             this.loadProxiesBtn.UseVisualStyleBackColor = true;
-            this.loadProxiesBtn.Click += new System.EventHandler(this.loadProxiesBtn_Click);
+            this.loadProxiesBtn.Click += new System.EventHandler(this.btnProxies_Click);
             // 
             // btnStop
             // 

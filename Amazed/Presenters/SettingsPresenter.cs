@@ -1,5 +1,8 @@
-﻿using DreamAmazon.Interfaces;
+﻿using DreamAmazon.Events;
+using DreamAmazon.Interfaces;
 using DreamAmazon.Models;
+using EventAggregatorNet;
+using Microsoft.Practices.ServiceLocation;
 
 namespace DreamAmazon.Presenters
 {
@@ -9,6 +12,7 @@ namespace DreamAmazon.Presenters
         private readonly ICaptchaService _captchaService;
         private readonly ISettingsService _settingsService;
         public SettingModel Settings;
+        private readonly IEventAggregator _eventAggregator;
 
         public SettingsViewPresenter(ISettingsView view, ICaptchaService captchaService, ISettingsService settingsService)
         {
@@ -18,14 +22,15 @@ namespace DreamAmazon.Presenters
             _view = view;
             _captchaService = captchaService;
             _settingsService = settingsService;
+            _eventAggregator = ServiceLocator.Current.GetInstance<IEventAggregator>();
 
             Settings = LoadSettings();
             Settings.PropertyChanged += SettingsPropertyChanged;
 
-            _view.ValidateAccount += View_ValidateAccount;
+            _view.ValidateAccountRequested += View_ValidateAccountRequested;
         }
 
-        public async void View_ValidateAccount()
+        public async void View_ValidateAccountRequested()
         {
             var loginResult = await _captchaService.LoginAsync(Settings.DBCUser, Settings.DBCPass);
 
@@ -38,17 +43,19 @@ namespace DreamAmazon.Presenters
                 _view.ShowMessage("This DBC Account is not valid, please confirm your login details !", MessageType.Error);
             }
 
-            SaveSettings();
+            UpdateSettings();
         }
 
         private void SettingsPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            SaveSettings();
+            UpdateSettings();
 
             if (e.PropertyName == "DBCUser" || e.PropertyName == "DBCPass")
             {
                 ValidateAccountInfo(Settings);
             }
+
+            _eventAggregator.SendMessage(new SettingChangedMessage(Settings));
         }
 
         private void ValidateAccountInfo(SettingModel setting)
@@ -83,7 +90,7 @@ namespace DreamAmazon.Presenters
             ValidateAccountInfo(setting);
         }
 
-        public void SaveSettings()
+        public void UpdateSettings()
         {
             _settingsService.SetSettings(Settings);
         }

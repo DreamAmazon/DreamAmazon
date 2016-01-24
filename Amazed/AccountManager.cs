@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using DreamAmazon.Interfaces;
@@ -6,11 +7,11 @@ namespace DreamAmazon
 {
     public class AccountManager : IAccountManager
     {
-        private readonly List<Account> _accounts = new List<Account>();
+        private readonly ConcurrentBag<Account> _accounts = new ConcurrentBag<Account>();
 
-        public int Count { get { return _accounts.Count; } }
+        public int Count => _accounts.Count;
 
-        public IEnumerable<Account> Accounts { get { return _accounts; } }
+        public IEnumerable<Account> Accounts => _accounts;
 
         public void QueueAccount(string email, string password)
         {
@@ -23,7 +24,11 @@ namespace DreamAmazon
 
         public void Clear()
         {
-            _accounts.Clear();
+            while (!_accounts.IsEmpty)
+            {
+                Account account;
+                _accounts.TryTake(out account);
+            }
         }
     }
 }

@@ -12,6 +12,7 @@
     {
         Info,
         Error,
-        Warning
+        Warning,
+        Status
     }
 }

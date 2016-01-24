@@ -69,6 +69,18 @@
   <ItemGroup>
     <Compile Include="Attributes.cs" />
     <Compile Include="BindingWithErrorProvider.cs" />
+    <Compile Include="AccountsStatistic.cs" />
+    <Compile Include="Events\ProxiesStatisticMessage.cs" />
+    <Compile Include="Events\SettingChangedMessage.cs" />
+    <Compile Include="frmProxies.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmProxies.Designer.cs">
+      <DependentUpon>frmProxies.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Presenters\ProxiesViewPresenter.cs" />
+    <Compile Include="ProxiesStatistic.cs" />
+    <Compile Include="SelectFileResult.cs" />
     <Compile Include="frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,6 +116,7 @@
     <Compile Include="Models\SettingModel.cs" />
     <Compile Include="Notification.cs" />
     <Compile Include="NotificationMessage.cs" />
+    <Compile Include="Presenters\AboutViewPresenter.cs" />
     <Compile Include="Presenters\BasePresenter.cs" />
     <Compile Include="Presenters\LicenseViewPresenter.cs" />
     <Compile Include="Presenters\MainViewPresenter.cs" />
@@ -114,6 +127,7 @@
     <Compile Include="Result.cs" />
     <Compile Include="ResultExtensions.cs" />
     <Compile Include="RoboState.cs" />
+    <Compile Include="SelectFileOptions.cs" />
     <Compile Include="Services\BaseCaptchaService.cs" />
     <Compile Include="Services\DeathByCaptchaService.cs" />
     <Compile Include="DeathByCaptcha\AccessDeniedException.cs" />
@@ -179,6 +193,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmProxies.resx">
+      <DependentUpon>frmProxies.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

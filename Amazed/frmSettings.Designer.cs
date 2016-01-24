@@ -213,7 +213,6 @@ namespace DreamAmazon
             // rbAuthenticatedProxies
             // 
             this.rbAuthenticatedProxies.AutoSize = true;
-            this.rbAuthenticatedProxies.Enabled = false;
             this.rbAuthenticatedProxies.Location = new System.Drawing.Point(28, 32);
             this.rbAuthenticatedProxies.Name = "rbAuthenticatedProxies";
             this.rbAuthenticatedProxies.Size = new System.Drawing.Size(131, 18);
@@ -224,7 +223,6 @@ namespace DreamAmazon
             // rbStandardProxies
             // 
             this.rbStandardProxies.AutoSize = true;
-            this.rbStandardProxies.Enabled = false;
             this.rbStandardProxies.Location = new System.Drawing.Point(28, 8);
             this.rbStandardProxies.Name = "rbStandardProxies";
             this.rbStandardProxies.Size = new System.Drawing.Size(108, 18);
@@ -342,10 +340,10 @@ namespace DreamAmazon
             this.proxiesMode.Enabled = false;
             this.proxiesMode.Location = new System.Drawing.Point(107, 76);
             this.proxiesMode.Name = "proxiesMode";
-            this.proxiesMode.Size = new System.Drawing.Size(114, 18);
+            this.proxiesMode.Size = new System.Drawing.Size(119, 18);
             this.proxiesMode.TabIndex = 3;
             this.proxiesMode.Text = "HTTP Proxies Only";
-            this.proxiesMode.UseVisualStyleBackColor = true;
+            this.proxiesMode.UseCompatibleTextRendering = true;
             this.proxiesMode.CheckedChanged += new System.EventHandler(this.duoMode_CheckedChanged);
             // 
             // duoMode
@@ -353,10 +351,10 @@ namespace DreamAmazon
             this.duoMode.AutoSize = true;
             this.duoMode.Location = new System.Drawing.Point(107, 27);
             this.duoMode.Name = "duoMode";
-            this.duoMode.Size = new System.Drawing.Size(122, 18);
-            this.duoMode.TabIndex = 2;
+            this.duoMode.Size = new System.Drawing.Size(130, 18);
+            this.duoMode.TabIndex = 1;
             this.duoMode.Text = "DBC + HTTP Proxies";
-            this.duoMode.UseVisualStyleBackColor = true;
+            this.duoMode.UseCompatibleTextRendering = true;
             this.duoMode.CheckedChanged += new System.EventHandler(this.duoMode_CheckedChanged);
             // 
             // dbcMode
@@ -365,11 +363,11 @@ namespace DreamAmazon
             this.dbcMode.Checked = true;
             this.dbcMode.Location = new System.Drawing.Point(107, 52);
             this.dbcMode.Name = "dbcMode";
-            this.dbcMode.Size = new System.Drawing.Size(71, 18);
-            this.dbcMode.TabIndex = 1;
+            this.dbcMode.Size = new System.Drawing.Size(73, 18);
+            this.dbcMode.TabIndex = 2;
             this.dbcMode.TabStop = true;
             this.dbcMode.Text = "DBC Only";
-            this.dbcMode.UseVisualStyleBackColor = true;
+            this.dbcMode.UseCompatibleTextRendering = true;
             this.dbcMode.CheckedChanged += new System.EventHandler(this.duoMode_CheckedChanged);
             // 
             // label5

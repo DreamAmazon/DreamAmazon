@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using DreamAmazon.Interfaces;
 using Microsoft.Practices.ServiceLocation;
@@ -11,6 +12,7 @@ namespace DreamAmazon
         private readonly ILogger _logger;
 
         public int Count { get { return _proxyManager.Count; } }
+        public IEnumerable<IWebProxy> Proxies { get { return _proxyManager.Proxies; } }
 
         public LoggedProxyManager(IProxyManager proxyManager)
         {
@@ -26,14 +28,23 @@ namespace DreamAmazon
             return _proxyManager.GetProxy();
         }
 
-        public void QueueProxy(string ip, string port)
+        public IWebProxy QueueProxy(string ip, int port)
         {
-            _proxyManager.QueueProxy(ip, port);
+            try
+            {
+                return _proxyManager.QueueProxy(ip, port);
+            }
+            catch (Exception exception)
+            {
+                _logger.Debug("error while queue proxy : " + ip + ":" + port);
+                _logger.Error(exception);
+            }
+            return null;
         }
 
-        public void QueueProxy(string ip, string port, string username, string pass)
+        public IWebProxy QueueProxy(string ip, int port, string username, string pass)
         {
-            _proxyManager.QueueProxy(ip, port, username, pass);
+            return _proxyManager.QueueProxy(ip, port, username, pass);
         }
 
         public void RemoveProxy(IWebProxy proxy)

@@ -1,8 +1,8 @@
-﻿using System.Windows.Forms;
+﻿using DreamAmazon.Interfaces;
 
 namespace DreamAmazon
 {
-    public partial class frmAbout : Form
+    public partial class frmAbout : BaseView, IAboutView
     {
         public frmAbout()
         {
