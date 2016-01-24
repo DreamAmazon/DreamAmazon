@@ -36,7 +36,7 @@ namespace DreamAmazon
                 }
                 else
                 {
-                    nHelper.Proxy = proxy;
+                    nHelper.SetProxy(proxy);
                 }
             }
 
@@ -47,7 +47,7 @@ namespace DreamAmazon
             if (Context.IsError(loginResponse))
             {
                 Context.Logger.Debug("error detected, finish state object:" + Context.CheckParams.Account.Email);
-                Context.ProxyManager.RemoveProxy(nHelper.Proxy);
+                Context.ProxyManager.RemoveProxy(nHelper.GetProxy());
                 Context.SetFinishState(CheckResults.Bad);
                 return;
             }

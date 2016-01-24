@@ -98,7 +98,7 @@ namespace DreamAmazon
                 return;
             }
 
-            proxyManager.RemoveProxy(nHelper.Proxy);
+            proxyManager.RemoveProxy(nHelper.GetProxy());
             Context.SetLoginState();
 
             _notDbcModeCounter++;

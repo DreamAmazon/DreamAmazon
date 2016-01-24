@@ -13,10 +13,24 @@ namespace DreamAmazon
 
         public string UserAgent { get; set; }
 
-        public IWebProxy Proxy { get; set; }
+        private IWebProxy _webProxy;
+        private Proxy _proxy;
+
+        public void SetProxy(Proxy proxy)
+        {
+            _webProxy = ProxyHelper.Create(proxy);
+            _proxy = proxy;
+        }
+
+        public Proxy GetProxy()
+        {
+            return _proxy;
+        }
 
         public NetHelper()
         {
+            _webProxy = WebRequest.DefaultWebProxy;
+            _proxy = Proxy.Empty;
             Cookies = new CookieContainer();
         }
 
@@ -43,11 +57,7 @@ namespace DreamAmazon
             request.AllowAutoRedirect = true;
             request.UserAgent = UserAgent;
             request.Accept = "*/*";
-
-            if (Proxy != null)
-            {
-                request.Proxy = Proxy;
-            }
+            request.Proxy = _webProxy;
 
             try
             {
@@ -93,11 +103,7 @@ namespace DreamAmazon
             request.AllowAutoRedirect = true;
             request.UserAgent = UserAgent;
             request.Accept = "*/*";
-
-            if (Proxy != null)
-            {
-                request.Proxy = Proxy;
-            }
+            request.Proxy = _webProxy;
 
             try
             {
@@ -124,7 +130,21 @@ namespace DreamAmazon
             }
         }
 
-        public static bool TestRequestConnect(IWebProxy proxy)
+        public static bool TestProxy1(IWebProxy proxy)
+        {
+            try
+            {
+                WebClient web = new WebClient { Proxy = proxy };
+                web.DownloadString("https://www.google.com/ncr");
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static bool TestProxy2(IWebProxy proxy)
         {
             bool isOk = false;
             try

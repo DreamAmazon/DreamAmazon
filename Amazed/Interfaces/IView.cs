@@ -67,8 +67,8 @@ namespace DreamAmazon.Interfaces
         event VoidHandler ClearProxiesRequested;
         event VoidHandler TestProxiesRequested;
         void ClearProxies();
-        void DisplayProxy(Uri proxyAddress);
-        void RemoveProxy(Uri proxyAddress);
+        void DisplayProxy(Proxy proxy);
+        void RemoveProxy(Proxy proxy);
         void EnableTestProxiesRequest(bool b);
         void EnableImportProxiesRequested(bool b);
     }

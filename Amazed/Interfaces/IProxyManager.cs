@@ -1,16 +1,15 @@
 using System.Collections.Generic;
-using System.Net;
 
 namespace DreamAmazon.Interfaces
 {
     public interface IProxyManager
     {
-        IWebProxy GetProxy();
-        IWebProxy QueueProxy(string ip, int port);
-        IWebProxy QueueProxy(string ip, int port, string username, string pass);
-        void RemoveProxy(IWebProxy proxy);
+        Proxy GetProxy();
+        Proxy QueueProxy(string ip, int port);
+        Proxy QueueProxy(string ip, int port, string username, string pass);
+        void RemoveProxy(Proxy proxy);
         void Clear();
         int Count { get; }
-        IEnumerable<IWebProxy> Proxies { get; }
+        IEnumerable<Proxy> Proxies { get; }
     }
 }

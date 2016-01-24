@@ -1,27 +1,20 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Net;
 using DreamAmazon.Interfaces;
 
 namespace DreamAmazon
 {
     public class ProxyManager : IProxyManager
     {
-        private readonly ConcurrentDictionary<IWebProxy, object> _proxies = new ConcurrentDictionary<IWebProxy, object>();
+        private readonly ConcurrentDictionary<Proxy, object> _proxies = new ConcurrentDictionary<Proxy, object>();
 
         public int Count => _proxies.Count;
-        public IEnumerable<IWebProxy> Proxies { get { return _proxies.Keys; } }
+        public IEnumerable<Proxy> Proxies { get { return _proxies.Keys; } }
 
-        private readonly IWebProxy _defaultProxy;
+        private readonly Proxy _defaultProxy = Proxy.Empty;
 
-        public ProxyManager()
-        {
-            _defaultProxy = WebRequest.GetSystemWebProxy();
-            _defaultProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
-        }
-
-        public IWebProxy GetProxy()
+        public Proxy GetProxy()
         {
             if (_proxies.Count == 0) return _defaultProxy;
 
@@ -38,24 +31,23 @@ namespace DreamAmazon
             return _defaultProxy;
         }
 
-        public IWebProxy QueueProxy(string ip, int port)
+        public Proxy QueueProxy(string ip, int port)
         {
-            IWebProxy proxy = new WebProxy(ip, port) {UseDefaultCredentials = true};
+            Proxy proxy = new Proxy(ip, port);
             _proxies.TryAdd(proxy, null);
             return proxy;
         }
 
-        public IWebProxy QueueProxy(string ip, int port, string username, string pass)
+        public Proxy QueueProxy(string ip, int port, string username, string pass)
         {
-            IWebProxy proxy = new WebProxy(ip, port);
-            proxy.Credentials = new NetworkCredential(username, pass);
+            Proxy proxy = new Proxy(ip, port, username, pass);
             _proxies.TryAdd(proxy, null);
             return proxy;
         }
 
-        public void RemoveProxy(IWebProxy proxy)
+        public void RemoveProxy(Proxy proxy)
         {
-            if (proxy == null)
+            if (proxy == null || proxy == Proxy.Empty)
                 return;
 
             object o;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Windows.Forms;
 using DreamAmazon.Interfaces;
 
@@ -43,26 +42,26 @@ namespace DreamAmazon
             }
         }
 
-        public void DisplayProxy(Uri proxyAddress)
+        public void DisplayProxy(Proxy proxy)
         {
             if (InvokeRequired)
             {
-                Invoke(new Action(() => DisplayProxy(proxyAddress)));
+                Invoke(new Action(() => DisplayProxy(proxy)));
             }
             else
             {
-                var lvi = new ListViewItem(proxyAddress.Host);
-                lvi.SubItems.Add(proxyAddress.Port.ToString());
+                var lvi = new ListViewItem(proxy.IpAddress);
+                lvi.SubItems.Add(proxy.Port.ToString());
                 lvProxies.Items.Add(lvi);
             }
         }
 
-        public void RemoveProxy(Uri proxyAddress)
+        public void RemoveProxy(Proxy proxy)
         {
             ListViewItem item = null;
             foreach (ListViewItem lvi in lvProxies.Items)
             {
-                if (lvi.Text == proxyAddress.Host && lvi.SubItems[0].Text == proxyAddress.Port.ToString())
+                if (lvi.Text == proxy.IpAddress && lvi.SubItems[0].Text == proxy.Port.ToString())
                 {
                     item = lvi;
                     break;

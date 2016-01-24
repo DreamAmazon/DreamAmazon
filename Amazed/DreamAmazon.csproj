@@ -80,6 +80,8 @@
     </Compile>
     <Compile Include="Presenters\ProxiesViewPresenter.cs" />
     <Compile Include="ProxiesStatistic.cs" />
+    <Compile Include="Proxy.cs" />
+    <Compile Include="ProxyHelper.cs" />
     <Compile Include="SelectFileResult.cs" />
     <Compile Include="frmAbout.cs">
       <SubType>Form</SubType>

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using DreamAmazon.Events;
@@ -49,31 +48,19 @@ namespace DreamAmazon.Presenters
         {
             return Task.Factory.StartNew(() =>
             {
-                var dead = new ConcurrentStack<IWebProxy>();
+                var dead = new ConcurrentStack<Proxy>();
                 Parallel.ForEach(_proxyManager.Proxies, proxy =>
                 {
                     bool result = false;
                     var mre = new ManualResetEvent(false);
                     Thread thread = new Thread(() =>
                     {
-                        try
-                        {
-                            WebClient web = new WebClient();
-                            web.Proxy = proxy;
-                            web.DownloadString("https://www.google.com/ncr");
-                            result = true;
-                            mre.Set();
-                        }
-                        catch
-                        {
-                            result = false;
-                        }
-                        
-                        //result = NetHelper.TestRequestConnect(proxy);
-                        
+                        result = NetHelper.TestProxy1(ProxyHelper.Create(proxy));
+                        mre.Set();
                     }) {IsBackground = true};
+                    thread.Start();
 
-                    if (!mre.WaitOne(TimeSpan.FromSeconds(5)))
+                    if (!mre.WaitOne(TimeSpan.FromSeconds(10)))
                     {
                         dead.Push(proxy);
                         thread.Abort();
@@ -89,7 +76,7 @@ namespace DreamAmazon.Presenters
 
                 while (dead.Count > 0)
                 {
-                    IWebProxy proxy;
+                    Proxy proxy;
                     if (dead.TryPop(out proxy))
                     {
                         _proxyManager.RemoveProxy(proxy);
@@ -180,7 +167,7 @@ namespace DreamAmazon.Presenters
             _view.ClearProxies();
             foreach (var proxy in _proxyManager.Proxies)
             {
-                _view.DisplayProxy(proxy.GetProxy(new Uri("https://amazon.com/")));
+                _view.DisplayProxy(proxy);
             }
         }
     }
