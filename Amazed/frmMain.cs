@@ -261,18 +261,6 @@ namespace DreamAmazon
             OnDisplaySettingsRequested();
         }
 
-        public void ShowStatusInfo(string text)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new Action(() => ShowStatusInfo(text)));
-            }
-            else
-            {
-                toolStripStatusLabel2.Text = text;
-            }
-        }
-
         protected virtual void OnStart()
         {
             StartCheckingRequested?.Invoke();
